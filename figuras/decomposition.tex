@@ -1,0 +1,9 @@
+%% decomposition test, N=50, lambda=1.0, nu=3.0, c=1.0, B=2 c sigma_N, simulation
+\begin{tabular}{c|cc|cc|cc|c}
+ & \multicolumn{2}{c|}{$P(x=0)$} & \multicolumn{2}{c|}{$P(x=B\mid x>0)$} & \multicolumn{2}{c|}{$E[n\mid 0<x<B]$} & TV of $x\mid$\\
+$\beta$ & thr. & free & thr. & free & thr. & free & interior\\\hline
+$-0.5$ & 0.761 & 0.427 & 0.0026 & 0.0026 & 10.969 & 10.969 & 0.0049\\
+$\phantom{-}0$ & 0.177 & 0.082 & 0.1003 & 0.0999 & 12.500 & 12.500 & 0.0033\\
+$\phantom{-}0.5$ & 0.005 & 0.003 & 0.4392 & 0.4396 & 14.031 & 14.031 & 0.0010\\
+$\phantom{-}1$ & $4.6\cdot 10^{-5}$ & $3.4\cdot 10^{-5}$ & 0.7076 & 0.7075 & 15.562 & 15.562 & 0.0002\\
+\end{tabular}

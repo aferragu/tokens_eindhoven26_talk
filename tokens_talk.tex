@@ -1,0 +1,1225 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{libertine}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{marvosym}
+
+\setitemize{label=\usebeamerfont*{itemize item}%
+  \usebeamercolor[fg]{itemize item}
+  \usebeamertemplate{itemize item},
+}
+\setbeamertemplate{itemize item}[square]
+\setbeamertemplate{itemize subitem}[circle]
+
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usetikzlibrary{automata, arrows, positioning, calc, babel, backgrounds, matrix, shapes, shadings, patterns, decorations.pathreplacing}
+\usepgfplotslibrary{fillbetween, groupplots}
+
+
+%%natbib conf
+\usepackage[square,authoryear]{natbib}
+\renewcommand{\cite}{\citep}
+\renewcommand{\bibfont}{\small}
+\bibliographystyle{abbrvnat}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\brackets}[2]{\left\langle#1,#2\right\rangle}
+\newcommand{\ind}[1]{\mathbf{1}_{\left\{#1\right\}}}
+
+\newcommand{\graphheight}{7cm}
+\newcommand{\graphwidth}{11cm}
+
+\newcommand{\E}[1]{E\left[#1 \right]}
+\renewcommand{\phi}{\varphi}
+
+\definecolor{azulcito}{RGB}{0,90,150}
+\definecolor{verdecito}{RGB}{90,150,0}
+\definecolor{rojito}{RGB}{150,0,90}
+\definecolor{violetita}{RGB}{150,20,150}
+
+
+\setbeamercolor*{structure}{fg=azulcito,bg=azulcito!20!white}
+\setbeamercolor*{alerted text}{fg=azulcito}
+
+  \setbeamercolor{block title}{fg=azulcito,bg=azulcito!20!white}
+  \setbeamercolor{block body}{fg=black,bg=azulcito!10!white}
+
+\beamertemplatenavigationsymbolsempty
+
+\setbeamercolor*{author in head/foot}{fg=azulcito,bg=azulcito!15!white}
+\setbeamercolor*{title in head/foot}{fg=azulcito,bg=azulcito!15!white}
+\setbeamercolor*{date in head/foot}{fg=azulcito,bg=azulcito!15!white}
+
+% Pgfplots
+\pgfplotsset{width=\graphwidth, height = \graphheight, grid style = {dashed, gray}, every tick label/.append style = {font=\footnotesize}, compat=1.18, legend style={font=\footnotesize, draw=none, fill=none}, every axis/.append style={label style={font=\footnotesize}}}
+
+\tikzset{>=stealth}
+
+\newtheorem{proposition}{Proposition}
+
+\defbeamertemplate*{footline}{mitema}
+{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.25\paperwidth,ht=2.25ex,dp=1ex,left]{author in head/foot}%
+    \usebeamerfont{author in head/foot}\hspace*{2ex}\insertshortauthor
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+    \usebeamerfont{date in head/foot}\insertshortdate{}
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.25\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+    \insertframenumber{}/\inserttotalframenumber\hspace*{2em}
+  \end{beamercolorbox}}%
+ \vskip0pt%
+}
+
+
+\setbeamercolor{blocky}{fg=azulcito,bg=azulcito!15!white}
+\setbeamercolor{blocky2}{fg=black,bg=azulcito!10!white}
+
+\defbeamertemplate*{title page}{customized}[1][]
+{
+{\flushright
+  \begin{beamercolorbox}[wd=\paperwidth,sep=1em,right,rightskip=1.5em]{blocky}%
+    \usebeamerfont{title}{\huge \inserttitle}\par \bigskip
+
+    \usebeamerfont{subtitle}{\large \insertsubtitle}\par
+  \end{beamercolorbox}%
+  \vfill
+    \usebeamerfont{author}{\Large \insertauthor}\par \vspace{1em}
+      \usebeamerfont{institute}{\large \insertinstitute}\par
+
+
+  \vfill
+  \usebeamerfont{date}{\insertdate}\par
+  }
+}
+
+\usefonttheme[onlymath]{serif}
+
+%% ---------------------------------------------------------------------
+%% Notation used throughout
+%%   N agents, activation rate lambda, demand Y ~ Exp(mu) tokens, burn rate c
+%%   nu = mu c, gamma = lambda + nu, rho = lambda/gamma, nbar = N rho
+%%   quota x in [0,B], refill p, drift r_n = p - n c, R = diag(r_n), Q = Engset generator, n* = floor(p/c)
+%%   sigma_N = sqrt(N rho (1-rho)), theta_k eigenvalues
+%% ---------------------------------------------------------------------
+\newcommand{\nb}{\bar n}
+\newcommand{\ns}{n^*}
+\newcommand{\sN}{\sigma_N}
+
+\title{Token budgets for fleets of AI agents}
+\subtitle{An old fluid queue in a new setting}
+
+\author[Andres Ferragut, Universidad ORT Uruguay]{Andres Ferragut, Universidad ORT Uruguay}
+\institute{joint work with Diego Goldsztajn and Fernando Paganini}
+\date[Seminar -- November 2026]{November 2026}
+
+\AtBeginSection[]
+{
+\begin{frame}{Outline}
+\tableofcontents[currentsection]
+\end{frame}
+}
+
+\newenvironment*{myitem}[1][1.5em]{\begin{itemize}\setlength{\itemsep}{#1}}{\end{itemize}}
+
+\begin{document}
+
+\frame[plain]{\titlepage}
+
+\begin{frame}{Outline}
+\tableofcontents
+\end{frame}
+
+%=====================================================================
+\section{Motivation}
+%=====================================================================
+
+\begin{frame}{Agents run on tokens}
+
+	\begin{myitem}
+		\item AI agents (coding, research, customer support) work by \alert{consuming tokens}: every step of a task is paid in tokens.
+		\item Providers sell usage as a \alert{quota}:
+		\begin{itemize}
+			\item it refills at a contracted \alert{rate};
+			\item it is capped at a maximum \alert{depth};
+			\item when it runs out, the user is \alert{throttled}.
+		\end{itemize}
+		\item An organisation runs a \alert{fleet} of agents against one shared quota. Agents start and finish tasks at random times.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{Two purchasing questions}
+
+	\begin{block}{}
+		\begin{center}
+		What \alert{refill rate} should we buy? \qquad How large a \alert{quota} should we hold?
+		\end{center}
+	\end{block}
+
+	\vfill
+	\pause
+
+	\begin{myitem}
+		\item Buying too little: agents are \alert{throttled} and tasks stall.
+		\item Buying too much: the quota sits full and the refill is \alert{wasted}.
+		\item<3-> How do both answers \alert{scale} with the size of the fleet?
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{Where this came from: a battery-backed EV charger}
+
+	\begin{columns}
+		\begin{column}{0.48\textwidth}
+			\begin{itemize}
+			\item A \alert{battery} between grid and charger: recharged slowly, discharged fast.
+			\item Fast charging at $p_2$ while $x>0$; when the battery is \alert{empty}, only the grid rate $p_1<p_2$.
+			\item<2-> Single-server loss system \cite{BibiloniFerragut2026}: closed form, with \alert{decoupling} $f_1 = \frac{p_0}{c} f_0$, $f_0\propto e^{\theta x}$.
+			\end{itemize}
+		\end{column}
+		\begin{column}{0.52\textwidth}
+			\begin{center}
+			\begin{tikzpicture}[every node/.style={font=\small}]
+				\node[draw, thick, rounded corners, fill=azulcito!15!white, minimum width=1.5cm, minimum height=1cm] (grid) at (0,0) {Grid};
+				\node[draw, thick, circle, fill=azulcito!70!white, minimum size=1.1cm, text=white] (ch) at (4.2,0) {EV};
+				\node at (4.2,.95) {Charger};
+
+				\draw[->, thick, rojito] (5.8,0) -- node[above] {$\lambda$} (ch);
+
+				\node[draw, thick, rounded corners, fill=verdecito!20!white, minimum width=1.4cm, minimum height=1.4cm] (bat) at (2.1,-2.2) {\includegraphics[width=.6cm]{figuras/battery_mid.png}};
+				\node[below] at (bat.south) {$x\in[0,B]$};
+				\draw[->, thick, verdecito] (grid) |- node[pos=0.75, below] {$p_0$} (bat);
+				\draw[->, thick, verdecito] (bat) -| node[pos=0.25, below] {$c$} (ch);
+				\draw[->, very thick, azulcito] (grid) -- node[above] {$p_1$} (ch);
+			\end{tikzpicture}
+
+			\medskip
+			{\footnotesize Joint work with S.~Bibiloni (Universidad de la República).}
+			\end{center}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Strip away the batteries and the cars}
+
+	\begin{myitem}[1.2em]
+		\item A \alert{reservoir}, refilled at a constant rate, up to a cap.
+		\item<2-> Users \alert{come and go}, and draw from it fast while it lasts.
+		\item<3-> When it is empty, everyone is \alert{held to the refill rate}.
+	\end{myitem}
+
+	\vfill
+	\uncover<4->{
+	\begin{center}
+		{\Large Have we seen this before?}
+	\end{center}
+	}
+	\vfill
+\end{frame}
+
+\begin{frame}[plain]
+	\vfill
+	\begin{center}
+		{\Huge Yes!}\\[1.2em]
+		{\LARGE It is a \alert{token bucket}.}\\[1.5em]
+		{\large The classical tool of \alert{traffic shaping} in networks.}
+	\end{center}
+	\vfill
+\end{frame}
+
+\begin{frame}{What is a token bucket?}
+
+	\begin{columns}
+		\begin{column}{0.46\textwidth}
+			\begin{myitem}[1em]
+				\item Tokens drip into a bucket at rate $p$, up to a depth $B$.
+				\item<2-> Traffic leaves only by \alert{spending tokens}: bursts up to $B$ pass at once, the long-run rate is $p$.
+				\item<3-> Bucket empty: traffic waits (\alert{shaping}) or is dropped (\alert{policing}).
+				\item<3-> Bucket full: new tokens are discarded.
+			\end{myitem}
+		\end{column}
+		\begin{column}{0.54\textwidth}
+			\begin{center}
+			\begin{tikzpicture}[every node/.style={font=\footnotesize}]
+				% token source
+				\draw[->, very thick, verdecito!80!black] (3.6,4.0) -- node[left] {tokens, rate $p$} (3.6,3.15);
+				% bucket
+				\draw[very thick] (3.0,3.0) -- (3.0,1.2) -- (4.2,1.2) -- (4.2,3.0);
+				\draw[dashed] (2.8,3.0) node[left] {$B$} -- (4.4,3.0);
+				\foreach \i in {0,1,2}{ \foreach \j in {0,1}{
+					\fill[verdecito!70!white] (3.25+0.35*\i,1.45+0.32*\j) circle (0.12);
+				}}
+				\draw<3->[->, thick, gray] (4.3,2.9) -- (4.9,3.35) node[above] {discarded};
+				% gate
+				\node[draw, thick, rounded corners, fill=azulcito!15!white, minimum width=1.0cm, minimum height=0.6cm] (gate) at (3.6,0) {gate};
+				\draw[->, thick, verdecito!80!black] (3.6,1.15) -- node[right] {spend} (gate.north);
+				% traffic queue
+				\node[rojito] at (0.9,0.55) {traffic};
+				\draw[->, thick, rojito] (0,0) -- (0.6,0);
+				\foreach \k in {0.75,1.2,1.65,2.1}{
+					\fill[rojito!60!white] (\k,-0.17) rectangle ++(0.34,0.34);
+				}
+				\draw[->, thick] (2.5,0) -- (gate.west);
+				\draw[->, very thick, azulcito] (gate.east) -- (5.4,0);
+				\node[azulcito, below] at (4.85,-0.1) {shaped};
+			\end{tikzpicture}
+			\end{center}
+		\end{column}
+	\end{columns}
+
+	\vfill
+	\uncover<4->{
+	{\footnotesize Introduced to police and shape traffic in ATM and the Internet \cite{Turner1986}; today it is the standard rate limiter of APIs and cloud services.}
+	}
+\end{frame}
+
+\begin{frame}{Token buckets are fluid queues}
+
+	\begin{myitem}
+		\item The token level is a \alert{fluid buffer}: filled at rate $p$, drained by the traffic.
+		\item<2-> Token buckets fed by \alert{Markov-modulated} on--off sources were analysed with spectral methods in the early 1990s, e.g.\ \cite{ElwalidMitra1991}.
+	\end{myitem}
+
+	\vfill
+	\uncover<3->{
+	\begin{block}{}
+		\begin{center}
+		An \alert{old fluid queue}, in a \alert{new setting}: AI agents sharing a token quota.
+		\end{center}
+	\end{block}
+	}
+\end{frame}
+
+\begin{frame}{The connection: a shared token bucket}
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}{l|l}
+		\alert{token bucket} & \alert{agent fleet}\\\hline
+		tokens in the bucket & remaining quota $x$\\
+		bucket depth & quota cap $B$\\
+		token rate & refill rate $p$\\
+		peak rate & burn rate $c$ of an agent\\
+		flows arriving & agents activating\\
+		empty: held to the token rate & empty: \alert{throttled}\\
+		full: tokens discarded & full: refill \alert{wasted}
+	\end{tabular}
+	\end{center}
+
+	\vfill
+	\pause
+
+	The interesting state is the \alert{empty} bucket.
+\end{frame}
+
+\begin{frame}{The new setting}
+
+	\begin{block}{}
+		\begin{center}
+		The quota is a \alert{shared bucket}, drawn on by a \alert{random number of agents} that come and go.\\
+		When it runs dry, the agents \alert{finish more slowly}.
+		\end{center}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Key points of this talk}
+
+	\begin{myitem}
+		\item A \alert{flow-level model} of a token quota shared by a fleet of on--off agents: a PDMP with state (active agents, tokens left).
+		\item All eigenvalues of the stationary problem are \alert{real}: a short proof from reversibility.
+		\item The stationary law \alert{exists, is unique and positive}: a $2\times 2$ Perron--Frobenius argument.
+		\item \alert{Square-root provisioning} (work in progress): a refill margin of order $\sqrt N$ above the mean burn should need a quota of order $\sqrt N$ only.
+	\end{myitem}
+\end{frame}
+
+%=====================================================================
+\section{The model}
+%=====================================================================
+
+\begin{frame}{One agent}
+
+	\begin{myitem}[1em]
+		\item An agent is \alert{idle} or \alert{active}. An idle agent starts a task at rate $\lambda$.
+		\item A task requires $Y\sim\text{Exp}(\mu)$ \alert{tokens}, drawn afresh each time.
+		\item An active agent \alert{burns} tokens at rate $c$ (tokens per unit time).
+	\end{myitem}
+
+	\vfill
+
+	\begin{center}
+	\begin{tikzpicture}
+		\draw[->] (0,0) -- (12.4,0) node[right] {$t$};
+		\foreach \a/\b in {2.4/5.2, 7.4/8.4, 9.9/11.8}{
+			\fill[azulcito!70!white] (\a,-0.18) rectangle (\b,0.18);
+		}
+		\draw[decorate, decoration={brace, amplitude=5pt}] (0,0.3) -- node[above=5pt] {\footnotesize idle: $\text{Exp}(\lambda)$} (2.4,0.3);
+		\draw[decorate, decoration={brace, amplitude=5pt}] (2.4,0.3) -- node[above=5pt] {\footnotesize active: $Y/c$} (5.2,0.3);
+		\node[below] at (3.8,-0.25) {\footnotesize burns $Y$ tokens at rate $c$};
+		\node[left] at (0,0) {\footnotesize agent};
+	\end{tikzpicture}
+	\end{center}
+
+	\vfill
+\end{frame}
+
+\begin{frame}{One agent: rates}
+
+	\begin{myitem}
+		\item The active period is $Y/c\sim\text{Exp}(\nu)$, with \alert{completion rate}
+		\begin{equation*}
+			\nu := \mu c .
+		\end{equation*}
+		\item Memoryless demands: the state of an agent is just \alert{idle/active}.
+	\end{myitem}
+
+	\vfill
+	\pause
+
+	\begin{block}{Notation}
+		\begin{equation*}
+			\gamma := \lambda+\nu, \qquad \rho := \frac{\lambda}{\gamma} \quad\text{(duty cycle: fraction of time active)}.
+		\end{equation*}
+	\end{block}
+\end{frame}
+
+\begin{frame}{The fleet: an Engset population}
+
+	$N$ agents, independent \alert{as long as tokens remain}. Let $n(t)$ = number of active agents.
+
+	\vfill
+
+	\begin{center}
+	\begin{tikzpicture}[->, >=stealth, node distance=2.1cm, every state/.style={minimum size=0.9cm, fill=azulcito!15!white, draw=azulcito, thick}]
+		\node[state] (0) {$0$};
+		\node[state, right of=0] (1) {$1$};
+		\node[right of=1] (d1) {$\cdots$};
+		\node[state, right of=d1] (n) {$n$};
+		\node[right of=n] (d2) {$\cdots$};
+		\node[state, right of=d2] (N) {$N$};
+		\path (0) edge[bend left] node[above] {\footnotesize $N\lambda$} (1)
+		      (1) edge[bend left] node[below] {\footnotesize $\nu$} (0)
+		      (1) edge[bend left] node[above] {\footnotesize $(N-1)\lambda$} (d1)
+		      (d1) edge[bend left] node[below] {\footnotesize $2\nu$} (1)
+		      (d1) edge[bend left] node[above] {} (n)
+		      (n) edge[bend left] node[below] {\footnotesize $n\nu$} (d1)
+		      (n) edge[bend left] node[above] {\footnotesize $(N-n)\lambda$} (d2)
+		      (d2) edge[bend left] node[below] {\footnotesize $(n+1)\nu$} (n)
+		      (d2) edge[bend left] node[above] {\footnotesize $\lambda$} (N)
+		      (N) edge[bend left] node[below] {\footnotesize $N\nu$} (d2);
+	\end{tikzpicture}
+	\end{center}
+
+	\vfill
+
+	The finite-source birth--death chain of \cite{Engset1918}, with generator $Q$.
+
+	\vfill
+\end{frame}
+
+\begin{frame}{The fleet: stationary law}
+
+	\begin{myitem}
+		\item Stationary law: \alert{binomial},
+		\begin{equation*}
+			\pi_n = \binom{N}{n}\rho^n(1-\rho)^{N-n},\qquad \nb := N\rho \text{ agents active on average.}
+		\end{equation*}
+		\item Mean burn rate of the fleet: $c\nb$.
+	\end{myitem}
+
+	\vfill
+	\pause
+
+	\begin{block}{Reversibility \cite{Kelly1979}}
+		\begin{equation*}
+			\pi_n\,(N-n)\lambda = \pi_{n+1}\,(n+1)\nu .
+		\end{equation*}
+		We will use it \alert{twice}: for the spectrum and for positivity.
+	\end{block}
+\end{frame}
+
+\begin{frame}{The quota}
+
+	\begin{columns}
+		\begin{column}{0.55\textwidth}
+			\begin{myitem}
+				\item Tokens left: $x(t)\in[0,B]$.
+				\item The quota \alert{refills} at rate $p$.
+				\item With $n$ agents active, the net drift is
+				\begin{equation*}
+					\dot x = r_n := p - nc .
+				\end{equation*}
+			\end{myitem}
+		\end{column}
+		\begin{column}{0.45\textwidth}
+			\begin{center}
+			\begin{tikzpicture}
+				% bucket
+				\draw[very thick] (0,3) -- (0,0) -- (2.4,0) -- (2.4,3);
+				\fill[verdecito!30!white] (0.03,0.03) rectangle (2.37,1.7);
+				\draw[dashed] (-0.2,3) -- (2.6,3) node[right] {\footnotesize $B$};
+				\draw[<->] (-0.35,0) -- node[left] {\footnotesize $x$} (-0.35,1.7);
+				\draw[->, very thick, verdecito!80!black] (1.2,4) -- node[right] {$p$} (1.2,3.1);
+				% agents
+				\foreach \i/\s in {0/1, 1/1, 2/0, 3/1, 4/0}{
+					\pgfmathsetmacro{\xx}{-0.4+0.8*\i}
+					\ifnum\s=1
+						\node[circle, fill=azulcito!70!white, minimum size=0.45cm, inner sep=0pt] (a\i) at (\xx,-1.6) {};
+						\draw[->, thick, azulcito] (1.2,-0.05) -- (a\i);
+					\else
+						\node[circle, draw=gray, fill=gray!20, minimum size=0.45cm, inner sep=0pt] (a\i) at (\xx,-1.6) {};
+					\fi
+				}
+				\node at (1.2,-2.25) {\footnotesize $n=3$ active, each burns $c$};
+			\end{tikzpicture}
+			\end{center}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Filling and draining modes}
+
+	\begin{myitem}
+		\item The drift $r_n=p-nc$ changes sign once, at $\ns := \lfloor p/c\rfloor$:
+		\begin{itemize}
+			\item $n\leq \ns$: the quota \alert{fills};
+			\item $n> \ns$: the quota \alert{drains}.
+		\end{itemize}
+		\item<2-> Standing assumptions: $0<p<Nc$, and $p/c\notin\mathbb{Z}$, so that no mode has zero drift.
+	\end{myitem}
+
+	\vfill
+	\uncover<3->{
+	\begin{block}{Mean drift $p - c\nb$}
+		The plan is \alert{over-provisioned} if $p>c\nb$, \alert{under-provisioned} if $p<c\nb$.
+	\end{block}
+	}
+\end{frame}
+
+\begin{frame}{State space and dynamics}
+
+	\begin{columns}
+	\begin{column}{0.52\textwidth}
+	\begin{center}
+	\begin{tikzpicture}[scale=0.9]
+		\foreach \n/\y in {0/0, 1/1, 2/2, 3/3, 4/4}{
+			\draw[->] (-0.3,\y) node[anchor=east] {\footnotesize $n=\n$} -- (6,\y);
+		}
+		\node[anchor=east] at (-0.3,4.6) {\footnotesize $\vdots$};
+		\draw[dashed] (0,-0.3) node[below] {$0$} -- (0,4.4);
+		\draw[dashed] (5,-0.3) node[below] {$B$} -- (5,4.4);
+		% drift arrows, length proportional to |r_n| (p/c = 2.5)
+		\draw[->, verdecito!80!black, very thick] (3.4,0.22) -- ++(1.25,0);
+		\draw[->, verdecito!80!black, very thick] (3.4,1.22) -- ++(0.75,0);
+		\draw[->, verdecito!80!black, very thick] (3.4,2.22) -- ++(0.25,0);
+		\draw[->, rojito, very thick] (3.65,3.22) -- ++(-0.25,0);
+		\draw[->, rojito, very thick] (4.15,4.22) -- ++(-0.75,0);
+		\node[verdecito!80!black] at (2.5,-0.9) {\footnotesize $n\le \ns=2$: fill};
+		\node[rojito] at (2.5,5.0) {\footnotesize $n> \ns$: drain};
+		% sticky barriers
+		\foreach \y in {0,1,2}{ \fill[pattern=north west lines] (5,\y-0.2) rectangle ++(.2,.4); }
+		\foreach \y in {3,4}{ \fill[pattern=north west lines] (0,\y-0.2) rectangle ++(-.2,.4); }
+		% path
+		\node[azulcito, fill=azulcito, circle, minimum size=.18cm, inner sep=0pt] at (1,1) {};
+		\draw<2->[very thick,azulcito,->] (1,1) -- (2.0,1);
+		\draw<3->[very thick,azulcito,dashed,->] (2.0,1) -- (2.0,2);
+		\draw<3->[very thick,azulcito,->] (2.0,2) -- (2.9,2);
+		\draw<4->[very thick,azulcito,dashed,->] (2.9,2) -- (2.9,3);
+		\draw<4->[very thick,azulcito,->] (2.9,3) -- (2.5,3);
+		\draw<4->[very thick,azulcito,dashed,->] (2.5,3) -- (2.5,4);
+		\draw<4->[very thick,azulcito,->] (2.5,4) -- (0.05,4);
+		\node<5->[rojito, fill=rojito, circle, minimum size=.22cm, inner sep=0pt] at (0,4) {};
+	\end{tikzpicture}
+	\end{center}
+	\end{column}
+	\begin{column}{0.48\textwidth}
+		\begin{itemize}
+			\item State: $Z(t)=(n(t),x(t))$.
+			\item Arrows: speed $|r_n|$, here $p/c=2.5$.
+			\item<2-> Between jumps: $x$ moves \alert{deterministically}; $n$ is frozen.
+			\item<3-> Jumps change $n$ by $\pm 1$; $x$ is \alert{unchanged}.
+			\item<5-> The flow \alert{reaches the boundary} in finite time, and \alert{sticks} there.
+		\end{itemize}
+	\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{A sample path}
+
+	\begin{center}
+		\input{figuras/sample_path.tex}
+	\end{center}
+
+	\vfill
+	{\footnotesize $N=20$, $\rho=0.25$ ($\nb=5$), $c=1$, refill $p=5.2$, $B=4$. Long run: quota empty $9\%$ of the time, full $15\%$, in between $76\%$.}
+\end{frame}
+
+\begin{frame}{The full bucket}
+
+	\begin{myitem}
+		\item If $x=B$ and $n\leq \ns$, the refill would push the quota above its cap: the excess is \alert{discarded}.
+		\item The quota \alert{sticks} at $B$; the agents are \alert{unaffected}.
+		\item It leaves $B$ when the fleet crosses to $n=\ns+1$.
+	\end{myitem}
+
+	\vfill
+	\pause
+
+	\begin{myitem}
+		\item \alert{Atoms} of the stationary law at $(n,B)$, $n\leq\ns$.
+		\item \alert{Wasted refill rate}: $\displaystyle W = \sum_{n\le \ns} (p-nc)\,P(n=n,\ x=B)$.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{The empty bucket}
+
+	\begin{myitem}
+		\item If $x=0$ and $n>\ns$, the agents want $nc$ tokens per unit time, but only $p$ arrive.
+		\item<2-> \alert{Tokens are the unit of work}: a task is done when its $Y$ tokens have been burnt.
+		\item<3-> A starved agent does not slow down a stream: it \alert{stops progressing}.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{The empty bucket: throttling}
+
+	The $p$ incoming tokens are \alert{shared} among the $n$ active agents: each burns at rate $p/n$, and completes at rate $\mu p/n$.
+
+	\vfill
+	\pause
+
+	\begin{block}{Completion rate of the fleet}
+		\begin{equation*}
+			m(n,x) = \begin{cases} n\nu & x>0 \text{ or } n\leq\ns,\\ \mu p & x=0,\ n>\ns \quad\text{(\alert{throttled})}.\end{cases}
+		\end{equation*}
+	\end{block}
+
+	\vfill
+	\pause
+
+	\begin{myitem}[1em]
+		\item Activations continue at $(N-n)\lambda$; the quota stays at $0$ until $n$ drops to $\ns$.
+		\item Work is \alert{conserved}: no task is lost, the fleet just progresses at the refill rate.
+		\item At $x=0$ the fleet's rates depend on the quota: the chain $n(t)$ is \alert{not autonomous}.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{A piecewise-deterministic Markov process}
+
+	\begin{myitem}
+		\item $Z(t)=(n(t),x(t))$ is a PDMP \cite{Davis1984,Davis1993}:
+		\begin{itemize}
+			\item deterministic flow $\dot x = r_n$ between jumps;
+			\item state-dependent jump rates $(N-n)\lambda$ and $m(n,x)$;
+			\item jumps that leave $x$ unchanged.
+		\end{itemize}
+		\item<2-> It sits slightly outside Davis's framework: \alert{compact} state space, and a flow that \alert{reaches} the boundary.
+		\item<2-> The construction is explicit, and the strong Markov property holds.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{Extended generator}
+
+	For $\psi(n,\cdot)$ absolutely continuous:
+	\begin{equation*}
+		\mathcal{A}\psi(n,x) = r_n\,\partial_x\psi(n,x) + (N-n)\lambda\,[\psi(n+1,x)-\psi(n,x)] + m(n,x)\,[\psi(n-1,x)-\psi(n,x)],
+	\end{equation*}
+	with the transport term switched off at the sticky boundaries.
+
+	\vfill
+	\pause
+
+	A stationary law $\pi$ satisfies $\displaystyle\int \mathcal{A}\psi\,d\pi = 0$ for all $\psi$ in the domain.
+\end{frame}
+
+\begin{frame}{Two questions}
+
+	\begin{columns}[T]
+		\begin{column}{0.5\textwidth}
+			\begin{block}{Refilled quota, $p>0$}
+				\alert{Stationary law}: how often is the fleet throttled, how much refill is wasted?
+				\medskip
+
+				Most of the talk.
+			\end{block}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\begin{block}{Never-refilled quota, $p=0$}
+				\alert{Token exhaustion time}: how long does a budget of $B$ tokens last?
+				\medskip
+
+				At the end.
+			\end{block}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{The stationary measure}
+
+	We seek a \alert{mixed measure}:
+	\begin{myitem}
+		\item densities $f_n(x)$ on $(0,B)$;
+		\item atoms $\pi^B_n$ at $x=B$ for the filling modes $n\le\ns$;
+		\item atoms $\pi^0_n$ at $x=0$ for the draining modes $n>\ns$.
+	\end{myitem}
+
+	\vfill
+	\pause
+
+	\alert{Interior}, with $\mathbf{f}=(f_0,\ldots,f_N)$ a row vector and $R=\mathrm{diag}(r_n)$:
+	\begin{equation*}
+		\mathbf{f}'(x)\,R = \mathbf{f}(x)\,Q, \qquad x\in(0,B).
+	\end{equation*}
+\end{frame}
+
+\begin{frame}{Boundary conditions}
+
+	\begin{columns}[T]
+		\begin{column}{0.5\textwidth}
+			\alert{At $x=B$:}
+			\begin{itemize}
+				\item draining modes enter only through the \alert{gateway} $\ns\to\ns+1$:
+				\begin{equation*}
+					|r_{\ns+1}|\,f_{\ns+1}(B^-) = (N-\ns)\lambda\,\pi^B_{\ns},
+				\end{equation*}
+				and $f_n(B^-)=0$ for $n>\ns+1$;
+				\item atoms: Engset balance on $\{0,\ldots,\ns\}$, fed by the interior.
+			\end{itemize}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\alert{At $x=0$:}
+			\begin{itemize}
+				\item filling modes enter only through the \alert{gateway} $\ns+1\to\ns$:
+				\begin{equation*}
+					r_{\ns}\,f_{\ns}(0^+) = \mu p\;\pi^0_{\ns+1},
+				\end{equation*}
+				and $f_n(0^+)=0$ for $n<\ns$;
+				\item atoms: \alert{throttled} balance on $\{\ns+1,\ldots,N\}$, deaths at rate $\mu p$.
+			\end{itemize}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+%=====================================================================
+\section{Spectral structure}
+%=====================================================================
+
+\begin{frame}{Related models}
+
+	\begin{myitem}
+		\item Fluid buffers modulated by on--off sources have a long history: \cite{Kosten1974}, \cite{AMS1982}, the finite buffer of \cite{Mitra1988}, and token buffers \cite{ElwalidMitra1991}.
+		\item<2-> Sources whose rates depend on the buffer: \alert{feedback fluid queues} \cite{MMS2003}.
+	\end{myitem}
+
+	\vfill
+	\uncover<3->{
+	\begin{block}{}
+		\begin{center}
+		We use the same objects (eigenvalues, boundary conditions), with \alert{self-contained} proofs.
+		\end{center}
+	\end{block}
+	}
+\end{frame}
+
+\begin{frame}{Exponential solutions}
+
+	Try $\mathbf{f}(x)=\phi\,e^{\theta x}$ in $\mathbf{f}'R=\mathbf{f}Q$:
+	\begin{equation*}
+		\theta\,\phi R = \phi Q .
+	\end{equation*}
+
+	\vfill
+	\pause
+
+	\begin{myitem}
+		\item $R$ is invertible ($p/c\notin\mathbb Z$): $N+1$ eigenpairs $(\theta_k,\phi_k)$, and
+		\begin{equation*}
+			\mathbf{f}(x) = \sum_{k=0}^{N} a_k\,\phi_k\,e^{\theta_k x}.
+		\end{equation*}
+		\item $\theta=0$ is always an eigenvalue, with $\phi=\pi$ the binomial law.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{Two questions about the solution}
+
+	\begin{myitem}
+		\item The coefficients $a_k$ and the atoms are fixed by the \alert{boundary conditions}.
+		\item There are as many conditions as unknowns.
+	\end{myitem}
+
+	\vfill
+	\pause
+
+	\begin{block}{}
+		\begin{center}
+		Are the $\theta_k$ \alert{real}?\\[0.5em]
+		Is the resulting measure \alert{positive}, and \alert{unique}?
+		\end{center}
+	\end{block}
+\end{frame}
+
+\begin{frame}{All the eigenvalues are real}
+
+	\begin{theorem}
+		Every eigenvalue $\theta$ of $\theta\,\phi R=\phi Q$ is real.
+	\end{theorem}
+
+	\vfill
+	\pause
+
+	\alert{Step 1: reversibility.} Write $\phi_n = \pi_n h_n$. Detailed balance gives $\Pi Q = Q^\top \Pi$, with $\Pi=\mathrm{diag}(\pi_n)$, so the problem becomes
+	\begin{equation*}
+		Q h = \theta\,R h .
+	\end{equation*}
+
+	\vfill
+	\pause
+
+	Both $Q$ and the diagonal $R$ are \alert{self-adjoint} in the inner product
+	\begin{equation*}
+		\brackets{u}{v}_\pi = \sum_n \pi_n\, u_n\, \bar v_n .
+	\end{equation*}
+\end{frame}
+
+\begin{frame}{All the eigenvalues are real: proof}
+
+	\begin{myitem}
+		\item \alert{Step 2.} Take the inner product with $h$:
+		\begin{equation*}
+			\brackets{Qh}{h}_\pi = \theta\,\brackets{Rh}{h}_\pi, \qquad\text{both brackets real.}
+		\end{equation*}
+		\item<2-> \alert{Step 3.} $Q$ is a generator:
+		\begin{equation*}
+			\brackets{Qh}{h}_\pi = -\tfrac12\sum_{n,m}\pi_n Q_{nm}|h_n-h_m|^2\leq 0,
+		\end{equation*}
+		with equality iff $h$ is constant.
+		\item<3-> \alert{Step 4.} If $\brackets{Rh}{h}_\pi\neq 0$, $\theta$ is a ratio of reals. If it vanishes, then $\brackets{Qh}{h}_\pi=0$, so $h$ is constant, $Qh=0$, and $\theta=0$. \hfill $\square$
+	\end{myitem}
+
+	\vfill
+	\uncover<4->{
+	{\footnotesize Step 3 is needed because $R$ is \alert{indefinite}. AMS and Mitra prove reality by other routes (an explicit discriminant; a Schur complement and Sylvester's law of inertia).}
+	}
+\end{frame}
+
+%=====================================================================
+\section{Existence, uniqueness and positivity}
+%=====================================================================
+
+\begin{frame}{What the spectral solution does not tell us}
+
+	\begin{myitem}
+		\item Equal numbers of conditions and unknowns do not make the linear system \alert{non-singular}.
+		\item Nor do they make the resulting measure \alert{non-negative}: exponents of both signs, coefficients of both signs.
+		\item For the classical finite buffer, \cite{Mitra1988} does not prove either.
+	\end{myitem}
+
+	\vfill
+	\pause
+
+	\begin{block}{}
+		\begin{center}
+		We use a \alert{probabilistic} route instead of the linear algebra.
+		\end{center}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Existence and uniqueness}
+
+	\begin{theorem}
+		For $0<p<Nc$, $p/c\notin\mathbb Z$, the process has a \alert{unique} stationary distribution.\\
+		Its densities are positive on $(0,B)$ and its atoms are positive.
+	\end{theorem}
+\end{frame}
+
+\begin{frame}{The gateways}
+
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\begin{myitem}
+				\item Only two atoms \alert{leak into the interior}:
+				\begin{equation*}
+					u = \pi^0_{\ns+1}, \qquad v=\pi^B_{\ns}.
+				\end{equation*}
+				\item<2-> Given $(u,v)$, the interior and all other atoms are determined.
+			\end{myitem}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\begin{center}
+			\begin{tikzpicture}[scale=0.75]
+				\foreach \y in {0,1,2,3,4}{ \draw[gray!60] (0,\y) -- (5,\y); }
+				\draw[dashed] (0,-0.4) node[below] {$0$} -- (0,4.4);
+				\draw[dashed] (5,-0.4) node[below] {$B$} -- (5,4.4);
+				\node[anchor=east] at (-1.1,2) {\footnotesize $\ns$};
+				\node[anchor=east] at (-1.1,3) {\footnotesize $\ns{+}1$};
+				% atoms
+				\foreach \y in {0,1,2}{ \node[verdecito!80!black, fill=verdecito!80!black, circle, minimum size=.16cm, inner sep=0pt] at (5,\y) {}; }
+				\foreach \y in {3,4}{ \node[rojito, fill=rojito, circle, minimum size=.16cm, inner sep=0pt] at (0,\y) {}; }
+				% gateways
+				\node[draw, very thick, azulcito, circle, minimum size=.42cm] at (5,2) {};
+				\node[draw, very thick, azulcito, circle, minimum size=.42cm] at (0,3) {};
+				\node[azulcito] at (5.45,1.65) {$v$};
+				\node[azulcito] at (-0.45,3.35) {$u$};
+				\draw[->, very thick, azulcito, dashed] (5.25,2.2) to[bend right=40] node[right] {\scriptsize $(N{-}\ns)\lambda$} (5.25,2.8);
+				\draw[->, very thick, azulcito] (4.75,3) -- (3.2,3);
+				\draw[->, very thick, azulcito, dashed] (-0.25,2.8) to[bend right=40] node[left] {\scriptsize $\mu p$} (-0.25,2.2);
+				\draw[->, very thick, azulcito] (0.25,2) -- (1.8,2);
+			\end{tikzpicture}
+			\end{center}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Proof, part 1: positive boundary data, positive interior}
+
+	\begin{myitem}
+		\item Fix gateway data $(u,v)\geq 0$, not both zero.
+		\item<2-> Solve the interior system $\mathbf{f}'R=\mathbf{f}Q$, with each mode's condition at its \alert{inflow} end.
+		\item<3-> The solution is \alert{positive} on $(0,B)$: a \alert{maximum principle}, which again rests on \alert{reversibility}.
+	\end{myitem}
+
+	\vfill
+	\uncover<4->{
+	\begin{block}{}
+		\begin{center}
+		Positive boundary data $\Rightarrow$ positive interior.\\
+		It remains to find the boundary data.
+		\end{center}
+	\end{block}
+	}
+\end{frame}
+
+\begin{frame}{Proof, part 2: the gateways}
+
+	\begin{myitem}
+		\item Feeding the interior back to the boundaries: $(u',v') = T(u,v)$, with $T$ a $2\times 2$ matrix, \alert{$T>0$} by part 1.
+		\item A stationary law needs a fixed point: $T(u,v)=(u,v)$.
+		\item<2-> \alert{Flow conservation}: what leaves the boundaries through the gateways comes back. Testing the balance equations with $\psi\equiv 1$:
+		\begin{equation*}
+			w^\top T = w^\top, \qquad w = \big(\mu p,\ (N-\ns)\lambda\big) > 0 .
+		\end{equation*}
+		\item<3-> \alert{Perron--Frobenius}: a positive left eigenvector with eigenvalue $1$ makes $1$ the spectral radius of $T$, \alert{simple}, with a \alert{positive} right eigenvector $(u,v)$, unique up to scale.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{Proof, part 2: the other atoms}
+
+	\begin{myitem}
+		\item With the gateways known, the remaining atoms solve a \alert{birth--death recursion} on each side:
+		\begin{itemize}
+			\item at $x=B$, on $\{0,\ldots,\ns\}$, starting from $v$;
+			\item at $x=0$, on $\{\ns+1,\ldots,N\}$, starting from $u$.
+		\end{itemize}
+		\item<2-> The inputs from the interior are positive, so \alert{every atom is positive}.
+		\item<3-> Normalise. Uniqueness comes from the simplicity of the Perron eigenvalue. \hfill $\square$
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{Work in progress: feedback fluid queues}
+
+	\begin{myitem}
+		\item We are exploring the connection with \alert{feedback fluid queues} \cite{MMS2003}, where the sources' rates depend on the buffer.
+		\item<2-> There, excursions away from the empty buffer are \alert{unaffected} by the feedback.
+		\item<3-> If this carries over, the whole effect of the throttle reduces to \alert{one number}: the mass at the empty bucket.
+	\end{myitem}
+\end{frame}
+
+%=====================================================================
+\section{Square-root provisioning}
+%=====================================================================
+
+\begin{frame}{The two costs}
+
+	\begin{columns}[T]
+		\begin{column}{0.5\textwidth}
+			\begin{block}{Throttling}
+				\begin{equation*}
+					P_{\rm thr} = \sum_{n>\ns} \pi^0_n
+				\end{equation*}
+				fraction of time the fleet is held to $p$.
+			\end{block}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\begin{block}{Waste}
+				\begin{equation*}
+					W = \sum_{n\leq\ns} (p-nc)\,\pi^B_n
+				\end{equation*}
+				refill discarded at the cap.
+			\end{block}
+		\end{column}
+	\end{columns}
+
+\end{frame}
+
+\begin{frame}{How should the plan scale with the fleet?}
+
+	\begin{myitem}
+		\item The mean burn $c\nb$ grows like $N$.
+		\item The fleet fluctuates around $\nb$ by $\sN := \sqrt{N\rho(1-\rho)}$, which grows like $\sqrt N$.
+	\end{myitem}
+
+	\vfill
+	\pause
+
+	\begin{block}{}
+		\begin{center}
+		Is a refill margin of order $\sqrt N$ above the mean enough,\\
+		with a quota that is also of order $\sqrt N$?
+		\end{center}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Diffusion scaling}{Work in progress}
+
+	Set the refill and the quota on the scale of the fluctuations:
+	\begin{equation*}
+		p = c\nb + \beta\,c\,\sN, \qquad B = b\,c\,\sN .
+	\end{equation*}
+
+	\vfill
+	\pause
+
+	Scale the fleet and the token \alert{deficit}:
+	\begin{equation*}
+		\xi = \frac{n-\nb}{\sN}, \qquad \hat D = \frac{B-x}{c\,\sN}\in[0,b].
+	\end{equation*}
+
+	\vfill
+	\pause
+
+	\begin{myitem}[0.8em]
+		\item Inside $(0,B)$, \alert{exactly}: $\quad \dfrac{d\hat D}{dt} = \xi - \beta$.
+		\item The fleet alone obeys a CLT: $\xi \Rightarrow$ Ornstein--Uhlenbeck, $\ d\xi = -\gamma\,\xi\,dt + \sqrt{2\gamma}\,dW$.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{The candidate limit}{Work in progress}
+
+	A two-dimensional process $(\xi,\hat D)$ on $\R\times[0,b]$:
+
+	\vfill
+
+	\begin{myitem}
+		\item \alert{Interior}: $\quad d\xi = -\gamma\,\xi\,dt + \sqrt{2\gamma}\,dW, \qquad d\hat D = (\xi-\beta)\,dt$.
+		\item<2-> \alert{Full bucket}, $\hat D=0$: held there while $\xi<\beta$; the fleet is unaffected.
+		\item<3-> \alert{Empty bucket}, $\hat D=b$: held there while $\xi>\beta$, and the fleet is \alert{throttled}:
+		\begin{equation*}
+			d\xi = -(\lambda\,\xi + \nu\,\beta)\,dt + \sqrt{2\gamma}\,dW .
+		\end{equation*}
+	\end{myitem}
+
+	\vfill
+	\uncover<4->{
+	{\footnotesize Derived formally from the generator; convergence is not yet proved.}
+	}
+\end{frame}
+
+\begin{frame}{Reading the limit}
+
+	\begin{myitem}
+		\item The quota \alert{integrates} an Ornstein--Uhlenbeck process: it is not itself a reflected diffusion.
+		\item At the empty bucket the throttle \alert{switches} the drift of the fleet.
+		\item<2-> The fleet size \alert{disappears}. What remains:
+		\begin{itemize}
+			\item the refill margin $\beta$;
+			\item the quota $b$, in units of $c\,\sN$;
+			\item the agents' own rates $\lambda,\nu$.
+		\end{itemize}
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{If the limit is right}{Work in progress}
+
+	Let $P(\beta,b)$ be the fraction of time the \alert{limit process} spends at the empty bucket $\hat D=b$. Then
+	\begin{equation*}
+		P_{\rm thr} \;\longrightarrow\; P(\beta,b)\in(0,1), \qquad N\to\infty .
+	\end{equation*}
+
+	\vfill
+	\pause
+
+	\begin{myitem}
+		\item Throttling stays at a \alert{positive} level, set by the margin $\beta$ and the quota $b$, and \alert{not} by $N$.
+		\item<3-> The quota is \alert{always} of order $\sqrt N$: $B=b\,c\,\sN$.
+		\item<4-> Relative to the mean burn, both the margin and the quota \alert{vanish} like $1/\sqrt N$.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{Square-root staffing, for tokens}
+
+	\begin{center}
+	\small
+	\renewcommand{\arraystretch}{1.4}
+	\begin{tabular}{l|l|l}
+		& \alert{many servers} \cite{HalfinWhitt1981} & \alert{agent fleet}\\\hline
+		mean demand & offered load $R$ & mean burn $c\nb$\\
+		fluctuations & $\sqrt R$ & $c\,\sN \propto \sqrt N$\\
+		provisioning & $s = R + \beta\sqrt R$ servers & $p = c\nb + \beta\,c\,\sN$ refill\\
+		buffer & --- & quota $B = b\,c\,\sN$\\
+		limit & $P(\text{wait}) \to \alpha(\beta)\in(0,1)$ & $P_{\rm thr} \to P(\beta,b)\in(0,1)$
+	\end{tabular}
+	\end{center}
+
+	\vfill
+	\pause
+
+	\begin{myitem}
+		\item The same \alert{quality-and-efficiency-driven} regime: congestion neither vanishes nor dominates.
+		\item<3-> New here: a second knob, the \alert{quota}, also on the $\sqrt N$ scale.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{The scaling, numerically}
+
+	\begin{columns}
+		\begin{column}{0.58\textwidth}
+			\input{figuras/throttle_scaling.tex}
+		\end{column}
+		\begin{column}{0.42\textwidth}
+			\begin{myitem}
+				\item Margin fixed at $\beta=1$; quota in units of $c\,\sN$.
+				\item As $N$ grows from $10$ to $640$, the curves \alert{settle}: throttling depends on $b$, not on $N$.
+			\end{myitem}
+			\vfill
+			{\footnotesize Balance equations on a grid in $x$, checked against simulation. $\lambda=1$, $\nu=3$, $c=1$.}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{The message}
+
+	\vfill
+	\begin{block}{}
+		\begin{center}
+		\large Overprovision the refill by order $\sqrt N$ above the mean burn,\\[0.3em]
+		and a quota of order $\sqrt N$ suffices.
+		\end{center}
+	\end{block}
+	\vfill
+\end{frame}
+
+%=====================================================================
+\section{Token exhaustion time}
+%=====================================================================
+
+\begin{frame}{A quota that is never refilled}
+
+	\begin{myitem}
+		\item $p=0$: the fleet is \alert{autonomous} until the quota runs out.
+		\item Tokens left: $x(t)=B-c\,A(t)$, with $A(t)=\int_0^t n(s)\,ds$ the \alert{agent-time}.
+		\item Token exhaustion time: $T_B=\inf\{t: A(t)=B/c\}$. The level is hit \alert{exactly}: no overshoot.
+		\item A completion time on a multimode system \cite{KNT1987}, for the Engset chain.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{The mean exhaustion time}
+
+	Linear rates give a linear eigenfunction:
+	\begin{equation*}
+		Q(n-\nb)=-\gamma(n-\nb),
+	\end{equation*}
+	hence a martingale, and by optional stopping:
+
+	\vfill
+	\pause
+
+	\begin{proposition}
+		\begin{equation*}
+			\E{T_B} = \frac{1}{N\lambda}\left(\frac{\gamma B}{c} + \E{n(T_B)} - n(0)\right).
+		\end{equation*}
+	\end{proposition}
+
+	\vfill
+	\pause
+
+	The only unknown is \alert{who is active} at exhaustion.
+\end{frame}
+
+\begin{frame}{Who is working when the quota runs out?}
+
+	\begin{myitem}
+		\item On the agent-time clock, $n$ is a Markov chain on $\{1,\ldots,N\}$.
+		\item Its stationary law is \alert{size-biased}:
+		\begin{equation*}
+			\tilde\pi_n = \frac{n\,\pi_n}{\nb} \quad=\quad \text{law of } 1+\text{Bin}(N-1,\rho).
+		\end{equation*}
+	\end{myitem}
+
+	\vfill
+	\pause
+
+	\begin{block}{}
+		\begin{center}
+		At the instant the last token is spent, \alert{some agent is spending it}.\\
+		The other $N-1$ are active independently with probability $\rho$: an \alert{arrival theorem}.
+		\end{center}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Back to the mean}
+
+	\begin{myitem}
+		\item For large $B$:
+		\begin{equation*}
+			\E{T_B} \approx \frac{B}{c\nb} + \frac{\nb + (1-\rho) - n(0)}{N\lambda}.
+		\end{equation*}
+		\item<2-> If $n(0)$ is drawn from the size-biased law, the correction vanishes, \alert{exactly}:
+		\begin{equation*}
+			\E{T_B} = \frac{B}{c\nb}\quad\text{for every } B.
+		\end{equation*}
+	\end{myitem}
+\end{frame}
+
+%=====================================================================
+\section{Conclusions}
+%=====================================================================
+
+\begin{frame}{Messages from the talk}
+
+	\begin{myitem}
+		\item A token quota shared by a fleet of agents is a \alert{flow-level token bucket}: a PDMP with state (active agents, tokens left).
+		\item The \alert{empty bucket throttles} the fleet: a feedback fluid queue.
+		\item Real spectrum from \alert{reversibility}.
+		\item Existence, uniqueness and positivity from a \alert{$2\times2$ Perron--Frobenius} argument.
+		\item \alert{Square-root provisioning} (work in progress): a refill margin of order $\sqrt N$ above the mean burn, and a quota of order $\sqrt N$ suffices.
+	\end{myitem}
+\end{frame}
+
+
+\begin{frame}{Future work}
+
+	\begin{myitem}
+		\item \alert{Heavy-tailed} token demands: tasks are far from exponential.
+		\item \alert{Heterogeneous} agents, with different burn rates.
+		\item \alert{Congestion}: crowded fleets may become less efficient, and burn more tokens per task.
+		\item A proof of the \alert{diffusion limit}, and of the throttle decomposition.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}[plain]
+	\vfill
+	{\Huge \alert{Thank you!}}
+	\vfill
+	Andres Ferragut
+
+	\smallskip
+
+	\href{mailto://ferragut@ort.edu.uy}{\alert{ferragut@ort.edu.uy}}
+
+	\smallskip
+
+	\href{http://aferragu.github.io}{\alert{https://aferragu.github.io}}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{References}
+	\bibliography{tokens}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,16 @@
+%% P(throttled) vs B/(c sqrt(N rho(1-rho))), beta=1.0, lambda=1.0, nu=3.0, c=1.0 (balance equations on a grid, extrapolated)
+\begin{tikzpicture}
+\begin{semilogyaxis}[width=\textwidth, height=0.62\textwidth, xmin=0, xmax=3.7,
+  grid=major, grid style={gray!25},
+  xlabel={scaled depth $B/(c\sigma_N)$}, ylabel={$P(\text{throttled})$}, legend style={at={(0.5,1.03)}, anchor=south, legend columns=4, font=\scriptsize},
+  tick label style={font=\footnotesize}, label style={font=\footnotesize}]
+\addplot[verdecito, thick, mark=square*] coordinates {(0.25,0.0474747) (0.5,0.0189984) (0.75,0.00815956) (1.0,0.0036) (1.5,0.000723228) (2.0,0.000147513) (2.5,3.02209e-05) (3.0,6.19836e-06) (3.5,1.27133e-06)};
+\addlegendentry{$N=10$}
+\addplot[azulcito, thick, mark=*] coordinates {(0.25,0.0379604) (0.5,0.0141119) (0.75,0.00562969) (1.0,0.00230657) (1.5,0.000399483) (2.0,7.02409e-05) (2.5,1.24055e-05) (3.0,2.19331e-06) (3.5,3.87727e-07)};
+\addlegendentry{$N=40$}
+\addplot[rojito, thick, mark=triangle*] coordinates {(0.25,0.0339638) (0.5,0.0120015) (0.75,0.00454124) (1.0,0.00176204) (1.5,0.000272858) (2.0,4.27948e-05) (2.5,6.73336e-06) (3.0,1.05979e-06) (3.5,1.66697e-07)};
+\addlegendentry{$N=160$}
+\addplot[violetita, thick, mark=diamond*] coordinates {(0.25,0.0328914) (0.5,0.0112607) (0.75,0.00412376) (1.0,0.00154687) (1.5,0.000223377) (2.0,3.26129e-05) (2.5,4.77229e-06) (3.0,6.98195e-07) (3.5,1.02044e-07)};
+\addlegendentry{$N=640$}
+\end{semilogyaxis}
+\end{tikzpicture}
