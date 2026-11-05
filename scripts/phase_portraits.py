@@ -4,7 +4,7 @@ Phase portraits of the fluid limit of the token-quota model.
 Fluid scaling: p = N pbar, B = N bbar, nbar = n/N, xbar = x/N.
   interior  (0 < xbar < bbar):   nbar' = lam (1 - nbar) - nu nbar,   xbar' = pbar - c nbar
   full      (xbar = bbar, c nbar < pbar):  xbar' = 0, nbar as in the interior
-  empty     (xbar = 0,    c nbar > pbar):  xbar' = 0, nbar' = lam (1 - nbar) - nu pbar / c   (throttled)
+  empty     (xbar = 0,    c nbar > pbar):  xbar' = 0, nbar' = lam (1 - nbar) - mu pbar   (throttled; mu = nu / c)
 
 Writes ../figuras/phase_over.tex and ../figuras/phase_under.tex (pgfplots),
 with xbar on the horizontal axis and nbar on the vertical axis.

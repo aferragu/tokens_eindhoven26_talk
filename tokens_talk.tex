@@ -641,28 +641,6 @@
 	A stationary law $\pi$ satisfies $\displaystyle\int \mathcal{A}\psi\,d\pi = 0$ for all $\psi$ in the domain.
 \end{frame}
 
-\begin{frame}{Two questions}
-
-	\begin{columns}[T]
-		\begin{column}{0.5\textwidth}
-			\begin{block}{Refilled quota, $p>0$}
-				\alert{Stationary law}: how often is the fleet throttled, how much refill is wasted?
-				\medskip
-
-				Most of the talk.
-			\end{block}
-		\end{column}
-		\begin{column}{0.5\textwidth}
-			\begin{block}{Never-refilled quota, $p=0$}
-				\alert{Token exhaustion time}: how long does a budget of $B$ tokens last?
-				\medskip
-
-				A bonus track, at the end.
-			\end{block}
-		\end{column}
-	\end{columns}
-\end{frame}
-
 \begin{frame}{The stationary measure}
 
 	We seek a \alert{mixed measure}:
@@ -776,38 +754,100 @@
 	\vfill
 	\pause
 
-	\alert{Step 1: reversibility.} Write $\phi_n = \pi_n h_n$. Detailed balance gives $\Pi Q = Q^\top \Pi$, with $\Pi=\mathrm{diag}(\pi_n)$, so the problem becomes
+	\begin{myitem}
+		\item $\phi$ is a \alert{row} vector, possibly complex; $R=\mathrm{diag}(r_n)$ is real and invertible.
+		\item<3-> Divide the eigenvector by the stationary law:
+		\begin{equation*}
+			h_n := \frac{\phi_n}{\pi_n}, \qquad\text{i.e.}\qquad \phi = h^\top\Pi, \quad \Pi=\mathrm{diag}(\pi_n),\ \pi_n>0 .
+		\end{equation*}
+		\item<4-> For $\theta=0$: $\phi=\pi$ and $h\equiv 1$.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{Step 1: from $\phi$ to $h$}
+
+	Two facts:
+	\begin{myitem}[0.6em]
+		\item $\Pi R = R\Pi$, since both are diagonal;
+		\item $\Pi Q = Q^\top\Pi$, i.e.\ $\pi_n Q_{nm} = \pi_m Q_{mn}$: this is \alert{detailed balance}.
+	\end{myitem}
+
+	\vfill
+	\pause
+
+	Substitute $\phi=h^\top\Pi$ in $\theta\,\phi R=\phi Q$:
+	\begin{align*}
+		\theta\, h^\top \Pi R &= h^\top \Pi Q\\
+		\uncover<3->{\theta\, h^\top R\,\Pi &= h^\top Q^\top \Pi && \text{(the two facts)}\\}
+		\uncover<4->{\theta\,(Rh)^\top \Pi &= (Qh)^\top \Pi && \text{($R$ symmetric).}}
+	\end{align*}
+
+	\vfill
+	\uncover<5->{
+	Cancel the invertible $\Pi$ and transpose:
 	\begin{equation*}
-		Q h = \theta\,R h .
+		Q\,h = \theta\,R\,h .
+	\end{equation*}
+	}
+\end{frame}
+
+\begin{frame}{Self-adjointness}
+
+	Inner product weighted by the stationary law:
+	\begin{equation*}
+		\brackets{u}{v}_\pi := \sum_n \pi_n\, u_n\, \bar v_n .
 	\end{equation*}
 
 	\vfill
 	\pause
 
-	Both $Q$ and the diagonal $R$ are \alert{self-adjoint} in the inner product
-	\begin{equation*}
-		\brackets{u}{v}_\pi = \sum_n \pi_n\, u_n\, \bar v_n .
-	\end{equation*}
+	\begin{myitem}
+		\item $Q$ is self-adjoint, by detailed balance:
+		\begin{equation*}
+			\brackets{Qu}{v}_\pi = \sum_{n,m} \pi_n Q_{nm}\, u_m \bar v_n = \sum_{n,m} \pi_m Q_{mn}\, u_m \bar v_n = \brackets{u}{Qv}_\pi ,
+		\end{equation*}
+		using that $Q$ is real.
+		\item<3-> $R$ is real and diagonal, so it is self-adjoint too.
+		\item<4-> Hence $\brackets{Qh}{h}_\pi$ and $\brackets{Rh}{h}_\pi$ are \alert{real}, for every complex $h$.
+	\end{myitem}
 \end{frame}
 
 \begin{frame}{All the eigenvalues are real: proof}
+
+	Let $Qh=\theta Rh$, $h\neq 0$.
+
+	\vfill
 
 	\begin{myitem}
 		\item \alert{Step 2.} Take the inner product with $h$:
 		\begin{equation*}
 			\brackets{Qh}{h}_\pi = \theta\,\brackets{Rh}{h}_\pi, \qquad\text{both brackets real.}
 		\end{equation*}
-		\item<2-> \alert{Step 3.} $Q$ is a generator:
+		\item<2-> \alert{Step 3.} $Q$ is a generator (rows sum to $0$) and $\pi_nQ_{nm}$ is symmetric, so
 		\begin{equation*}
-			\brackets{Qh}{h}_\pi = -\tfrac12\sum_{n,m}\pi_n Q_{nm}|h_n-h_m|^2\leq 0,
+			\brackets{Qh}{h}_\pi = -\frac12\sum_{m\neq n}\pi_n Q_{nm}\,|h_n-h_m|^2\leq 0,
 		\end{equation*}
-		with equality iff $h$ is constant.
-		\item<3-> \alert{Step 4.} If $\brackets{Rh}{h}_\pi\neq 0$, $\theta$ is a ratio of reals. If it vanishes, then $\brackets{Qh}{h}_\pi=0$, so $h$ is constant, $Qh=0$, and $\theta=0$. \hfill $\square$
+		with equality iff $h$ is constant ($Q$ irreducible).
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{All the eigenvalues are real: end of proof}
+
+	\begin{myitem}
+		\item \alert{Step 4.} If $\brackets{Rh}{h}_\pi\neq 0$:
+		\begin{equation*}
+			\theta = \frac{\brackets{Qh}{h}_\pi}{\brackets{Rh}{h}_\pi}\in\R .
+		\end{equation*}
+		\item<2-> If $\brackets{Rh}{h}_\pi= 0$: then $\brackets{Qh}{h}_\pi=0$, so $h$ is constant and $Qh=0$.\\
+		Thus $\theta\,Rh=0$ with $Rh\neq0$ ($R$ invertible), so $\theta=0$. \hfill $\square$
 	\end{myitem}
 
 	\vfill
-	\uncover<4->{
-	{\footnotesize Step 3 is needed because $R$ is \alert{indefinite}. AMS and Mitra prove reality by other routes (an explicit discriminant; a Schur complement and Sylvester's law of inertia).}
+	\uncover<3->{
+	\begin{block}{}
+		Step 3 is needed because $R$ is \alert{indefinite}: self-adjointness alone allows $\brackets{Rh}{h}_\pi=0$.
+	\end{block}
+	{\footnotesize Reality is proved by other routes in \cite{AMS1982} (an explicit discriminant) and \cite{Mitra1988} (a Schur complement and Sylvester's law of inertia).}
 	}
 \end{frame}
 
@@ -986,8 +1026,9 @@
 		\item<2-> \alert{Full bucket}, $\bar x=\bar b$ and $c\bar n<\bar p$: $\ \dot{\bar x}=0$, and $\bar n$ as in the interior.
 		\item<3-> \alert{Empty bucket}, $\bar x=0$ and $c\bar n>\bar p$: $\ \dot{\bar x}=0$, and the fleet is \alert{throttled}:
 		\begin{equation*}
-			\dot{\bar n} = \lambda(1-\bar n) - \nu\,\frac{\bar p}{c} .
+			\dot{\bar n} = \lambda(1-\bar n) - \mu\,\bar p .
 		\end{equation*}
+		The fleet burns exactly the refill $\bar p$, and a task needs $1/\mu$ tokens on average.
 	\end{myitem}
 \end{frame}
 
@@ -1053,7 +1094,7 @@
 		\begin{center}
 		The flow slides along the empty boundary to an equilibrium that sits \alert{above} $\rho$:
 		\begin{equation*}
-			\bar n_T = 1 - \frac{\nu\,\bar p}{\lambda\,c} \;>\; \rho .
+			\bar n_T = 1 - \frac{\mu\,\bar p}{\lambda} \;>\; \rho .
 		\end{equation*}
 		\end{center}
 	\end{block}
@@ -1284,87 +1325,5 @@
 \begin{frame}[allowframebreaks]{References}
 	\bibliography{tokens}
 \end{frame}
-
-%=====================================================================
-\section*{Bonus track: exhaustion time}
-%=====================================================================
-
-\begin{frame}[plain]
-	\vfill
-	\begin{center}
-		{\Huge \alert{Bonus track}}\\[1em]
-		{\LARGE Token exhaustion time}
-	\end{center}
-	\vfill
-\end{frame}
-
-\begin{frame}{A quota that is never refilled}
-
-	\begin{myitem}
-		\item $p=0$: the fleet is \alert{autonomous} until the quota runs out.
-		\item Tokens left: $x(t)=B-c\,A(t)$, with $A(t)=\int_0^t n(s)\,ds$ the \alert{agent-time}.
-		\item Token exhaustion time: $T_B=\inf\{t: A(t)=B/c\}$. The level is hit \alert{exactly}: no overshoot.
-		\item A completion time on a multimode system \cite{KNT1987}, for the Engset chain.
-	\end{myitem}
-\end{frame}
-
-\begin{frame}{The mean exhaustion time}
-
-	Linear rates give a linear eigenfunction:
-	\begin{equation*}
-		Q(n-\nb)=-\gamma(n-\nb),
-	\end{equation*}
-	hence a martingale, and by optional stopping:
-
-	\vfill
-	\pause
-
-	\begin{proposition}
-		\begin{equation*}
-			\E{T_B} = \frac{1}{N\lambda}\left(\frac{\gamma B}{c} + \E{n(T_B)} - n(0)\right).
-		\end{equation*}
-	\end{proposition}
-
-	\vfill
-	\pause
-
-	The only unknown is \alert{who is active} at exhaustion.
-\end{frame}
-
-\begin{frame}{Who is working when the quota runs out?}
-
-	\begin{myitem}
-		\item On the agent-time clock, $n$ is a Markov chain on $\{1,\ldots,N\}$.
-		\item Its stationary law is \alert{size-biased}:
-		\begin{equation*}
-			\tilde\pi_n = \frac{n\,\pi_n}{\nb} \quad=\quad \text{law of } 1+\text{Bin}(N-1,\rho).
-		\end{equation*}
-	\end{myitem}
-
-	\vfill
-	\pause
-
-	\begin{block}{}
-		\begin{center}
-		At the instant the last token is spent, \alert{some agent is spending it}.\\
-		The other $N-1$ are active independently with probability $\rho$: an \alert{arrival theorem}.
-		\end{center}
-	\end{block}
-\end{frame}
-
-\begin{frame}{Back to the mean}
-
-	\begin{myitem}
-		\item For large $B$:
-		\begin{equation*}
-			\E{T_B} \approx \frac{B}{c\nb} + \frac{\nb + (1-\rho) - n(0)}{N\lambda}.
-		\end{equation*}
-		\item<2-> If $n(0)$ is drawn from the size-biased law, the correction vanishes, \alert{exactly}:
-		\begin{equation*}
-			\E{T_B} = \frac{B}{c\nb}\quad\text{for every } B.
-		\end{equation*}
-	\end{myitem}
-\end{frame}
-
 
 \end{document}
