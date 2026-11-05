@@ -657,7 +657,7 @@
 				\alert{Token exhaustion time}: how long does a budget of $B$ tokens last?
 				\medskip
 
-				At the end.
+				A bonus track, at the end.
 			\end{block}
 		\end{column}
 	\end{columns}
@@ -1010,13 +1010,15 @@
 \begin{frame}{Phase portrait: over-provisioned}
 
 	\begin{columns}
-		\begin{column}{0.6\textwidth}
+		\begin{column}{0.5\textwidth}
+			\begin{center}
 			\input{figuras/phase_over.tex}
+			\end{center}
 		\end{column}
-		\begin{column}{0.4\textwidth}
+		\begin{column}{0.5\textwidth}
 			\begin{myitem}[1em]
 				\item The fleet relaxes to $\rho$; the bucket \alert{fills}.
-				\item Equilibrium $(\rho,\bar b)$: no throttling.
+				\item Equilibrium: bucket full, $\bar n=\rho$. No throttling.
 				\item Refill wasted at rate $N(\bar p - c\rho)$: of order $N$.
 			\end{myitem}
 			\vfill
@@ -1028,14 +1030,16 @@
 \begin{frame}{Phase portrait: under-provisioned}
 
 	\begin{columns}
-		\begin{column}{0.6\textwidth}
+		\begin{column}{0.5\textwidth}
+			\begin{center}
 			\input{figuras/phase_under.tex}
+			\end{center}
 		\end{column}
-		\begin{column}{0.4\textwidth}
+		\begin{column}{0.5\textwidth}
 			\begin{myitem}[1em]
 				\item The bucket \alert{drains} and the fleet is throttled.
 				\item The flow \alert{slides} along the empty boundary\ldots
-				\item \ldots to an equilibrium $\bar n_T$ \alert{above} $\rho$.
+				\item \ldots to an equilibrium $\bar n_T$ \alert{above} $\rho$, with the bucket empty.
 			\end{myitem}
 			\vfill
 			{\footnotesize Green edge: full bucket. Red edge: empty bucket, fleet throttled. $\lambda=1$, $\nu=3$, $c=1$.}
@@ -1236,8 +1240,63 @@
 \end{frame}
 
 %=====================================================================
-\section{Token exhaustion time}
+\section{Conclusions}
 %=====================================================================
+
+\begin{frame}{Messages from the talk}
+
+	\begin{myitem}[1.1em]
+		\item A token quota shared by a fleet of agents is a \alert{flow-level token bucket}: a PDMP with state (active agents, tokens left).
+		\item The \alert{empty bucket throttles} the fleet: a feedback fluid queue.
+		\item Real spectrum from \alert{reversibility}.
+		\item Existence, uniqueness and positivity from a \alert{$2\times2$ Perron--Frobenius} argument.
+		\item \alert{Fluid limit}: full or empty; under-provisioning piles up the fleet above $\rho$.
+		\item \alert{Square-root provisioning} (work in progress): a refill margin of order $\sqrt N$ above the mean burn, and a quota of order $\sqrt N$ suffices.
+	\end{myitem}
+\end{frame}
+
+
+\begin{frame}{Future work}
+
+	\begin{myitem}
+		\item \alert{Heavy-tailed} token demands: tasks are far from exponential.
+		\item \alert{Heterogeneous} agents, with different burn rates.
+		\item \alert{Congestion}: crowded fleets may become less efficient, and burn more tokens per task.
+		\item A proof of the \alert{diffusion limit}, and of the throttle decomposition.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}[plain]
+	\vfill
+	{\Huge \alert{Thank you!}}
+	\vfill
+	Andres Ferragut
+
+	\smallskip
+
+	\href{mailto://ferragut@ort.edu.uy}{\alert{ferragut@ort.edu.uy}}
+
+	\smallskip
+
+	\href{http://aferragu.github.io}{\alert{https://aferragu.github.io}}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{References}
+	\bibliography{tokens}
+\end{frame}
+
+%=====================================================================
+\section*{Bonus track: exhaustion time}
+%=====================================================================
+
+\begin{frame}[plain]
+	\vfill
+	\begin{center}
+		{\Huge \alert{Bonus track}}\\[1em]
+		{\LARGE Token exhaustion time}
+	\end{center}
+	\vfill
+\end{frame}
 
 \begin{frame}{A quota that is never refilled}
 
@@ -1307,50 +1366,5 @@
 	\end{myitem}
 \end{frame}
 
-%=====================================================================
-\section{Conclusions}
-%=====================================================================
-
-\begin{frame}{Messages from the talk}
-
-	\begin{myitem}[1.1em]
-		\item A token quota shared by a fleet of agents is a \alert{flow-level token bucket}: a PDMP with state (active agents, tokens left).
-		\item The \alert{empty bucket throttles} the fleet: a feedback fluid queue.
-		\item Real spectrum from \alert{reversibility}.
-		\item Existence, uniqueness and positivity from a \alert{$2\times2$ Perron--Frobenius} argument.
-		\item \alert{Fluid limit}: full or empty; under-provisioning piles up the fleet above $\rho$.
-		\item \alert{Square-root provisioning} (work in progress): a refill margin of order $\sqrt N$ above the mean burn, and a quota of order $\sqrt N$ suffices.
-	\end{myitem}
-\end{frame}
-
-
-\begin{frame}{Future work}
-
-	\begin{myitem}
-		\item \alert{Heavy-tailed} token demands: tasks are far from exponential.
-		\item \alert{Heterogeneous} agents, with different burn rates.
-		\item \alert{Congestion}: crowded fleets may become less efficient, and burn more tokens per task.
-		\item A proof of the \alert{diffusion limit}, and of the throttle decomposition.
-	\end{myitem}
-\end{frame}
-
-\begin{frame}[plain]
-	\vfill
-	{\Huge \alert{Thank you!}}
-	\vfill
-	Andres Ferragut
-
-	\smallskip
-
-	\href{mailto://ferragut@ort.edu.uy}{\alert{ferragut@ort.edu.uy}}
-
-	\smallskip
-
-	\href{http://aferragu.github.io}{\alert{https://aferragu.github.io}}
-\end{frame}
-
-\begin{frame}[allowframebreaks]{References}
-	\bibliography{tokens}
-\end{frame}
 
 \end{document}
