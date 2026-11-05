@@ -1161,30 +1161,30 @@
 	\vfill
 	\pause
 
-	Scale the fleet and the token \alert{deficit}:
+	Scale the fleet and the \alert{tokens left}:
 	\begin{equation*}
-		\xi = \frac{n-\nb}{\sN}, \qquad \hat D = \frac{B-x}{c\,\sN}\in[0,b].
+		\xi = \frac{n-\nb}{\sN}, \qquad \hat x = \frac{x}{c\,\sN}\in[0,b].
 	\end{equation*}
 
 	\vfill
 	\pause
 
 	\begin{myitem}[0.8em]
-		\item Inside $(0,B)$, \alert{exactly}: $\quad \dfrac{d\hat D}{dt} = \xi - \beta$.
+		\item Inside $(0,B)$, \alert{exactly}: $\quad \dfrac{d\hat x}{dt} = \beta - \xi$.
 		\item The fleet alone obeys a CLT: $\xi \Rightarrow$ Ornstein--Uhlenbeck, $\ d\xi = -\gamma\,\xi\,dt + \sqrt{2\gamma}\,dW$.
 	\end{myitem}
 \end{frame}
 
 \begin{frame}{The candidate limit}{Work in progress}
 
-	A two-dimensional process $(\xi,\hat D)$ on $\R\times[0,b]$:
+	A two-dimensional process $(\hat x,\xi)$ on $[0,b]\times\R$:
 
 	\vfill
 
 	\begin{myitem}
-		\item \alert{Interior}: $\quad d\xi = -\gamma\,\xi\,dt + \sqrt{2\gamma}\,dW, \qquad d\hat D = (\xi-\beta)\,dt$.
-		\item<2-> \alert{Full bucket}, $\hat D=0$: held there while $\xi<\beta$; the fleet is unaffected.
-		\item<3-> \alert{Empty bucket}, $\hat D=b$: held there while $\xi>\beta$, and the fleet is \alert{throttled}:
+		\item \alert{Interior}: $\quad d\hat x = (\beta-\xi)\,dt, \qquad d\xi = -\gamma\,\xi\,dt + \sqrt{2\gamma}\,dW$.
+		\item<2-> \alert{Full bucket}, $\hat x=b$: held there while $\xi<\beta$; the fleet is unaffected.
+		\item<3-> \alert{Empty bucket}, $\hat x=0$: held there while $\xi>\beta$, and the fleet is \alert{throttled}:
 		\begin{equation*}
 			d\xi = -(\lambda\,\xi + \nu\,\beta)\,dt + \sqrt{2\gamma}\,dW .
 		\end{equation*}
@@ -1212,7 +1212,7 @@
 
 \begin{frame}{If the limit is right}{Work in progress}
 
-	Let $P(\beta,b)$ be the fraction of time the \alert{limit process} spends at the empty bucket $\hat D=b$. Then
+	Let $P(\beta,b)$ be the fraction of time the \alert{limit process} spends at the empty bucket $\hat x=0$. Then
 	\begin{equation*}
 		P_{\rm thr} \;\longrightarrow\; P(\beta,b)\in(0,1), \qquad N\to\infty .
 	\end{equation*}
