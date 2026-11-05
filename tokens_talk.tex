@@ -20,7 +20,7 @@
 
 \usepackage{pgfplots}
 \usepackage{tikz}
-\usetikzlibrary{automata, arrows, positioning, calc, babel, backgrounds, matrix, shapes, shadings, patterns, decorations.pathreplacing}
+\usetikzlibrary{automata, arrows, positioning, calc, babel, backgrounds, matrix, shapes, shadings, patterns, decorations.pathreplacing, decorations.markings}
 \usepgfplotslibrary{fillbetween, groupplots}
 
 
@@ -108,11 +108,12 @@
 %% ---------------------------------------------------------------------
 %% Notation used throughout
 %%   N agents, activation rate lambda, demand Y ~ Exp(mu) tokens, burn rate c
-%%   nu = mu c, gamma = lambda + nu, rho = lambda/gamma, nbar = N rho
+%%   nu = mu c, gamma = lambda + nu, rho = lambda/gamma; \nb = N rho (mean number active)
+%%   fluid variables: \bar n = n/N, \bar x = x/N, \bar p = p/N, \bar b = B/N
 %%   quota x in [0,B], refill p, drift r_n = p - n c, R = diag(r_n), Q = Engset generator, n* = floor(p/c)
 %%   sigma_N = sqrt(N rho (1-rho)), theta_k eigenvalues
 %% ---------------------------------------------------------------------
-\newcommand{\nb}{\bar n}
+\newcommand{\nb}{N\rho}
 \newcommand{\ns}{n^*}
 \newcommand{\sN}{\sigma_N}
 
@@ -121,7 +122,7 @@
 
 \author[Andres Ferragut, Universidad ORT Uruguay]{Andres Ferragut, Universidad ORT Uruguay}
 \institute{joint work with Diego Goldsztajn and Fernando Paganini}
-\date[Seminar -- November 2026]{November 2026}
+\date[TU/Eindhoven -- November 2026]{TU/Eindhoven -- November 2026}
 
 \AtBeginSection[]
 {
@@ -333,10 +334,11 @@
 
 \begin{frame}{Key points of this talk}
 
-	\begin{myitem}
+	\begin{myitem}[1.1em]
 		\item A \alert{flow-level model} of a token quota shared by a fleet of on--off agents: a PDMP with state (active agents, tokens left).
 		\item All eigenvalues of the stationary problem are \alert{real}: a short proof from reversibility.
 		\item The stationary law \alert{exists, is unique and positive}: a $2\times 2$ Perron--Frobenius argument.
+		\item \alert{Fluid limit}: the bucket ends full or empty; under-provisioning makes the fleet \alert{pile up}.
 		\item \alert{Square-root provisioning} (work in progress): a refill margin of order $\sqrt N$ above the mean burn should need a quota of order $\sqrt N$ only.
 	\end{myitem}
 \end{frame}
@@ -430,7 +432,7 @@
 	\begin{myitem}
 		\item Stationary law: \alert{binomial},
 		\begin{equation*}
-			\pi_n = \binom{N}{n}\rho^n(1-\rho)^{N-n},\qquad \nb := N\rho \text{ agents active on average.}
+			\pi_n = \binom{N}{n}\rho^n(1-\rho)^{N-n},\qquad N\rho \text{ agents active on average.}
 		\end{equation*}
 		\item Mean burn rate of the fleet: $c\nb$.
 	\end{myitem}
@@ -932,7 +934,7 @@
 \end{frame}
 
 %=====================================================================
-\section{Square-root provisioning}
+\section{Fluid limit}
 %=====================================================================
 
 \begin{frame}{The two costs}
@@ -957,6 +959,134 @@
 	\end{columns}
 
 \end{frame}
+
+\begin{frame}{Fluid scaling}
+
+	Scale the plan with the fleet:
+	\begin{equation*}
+		p = N\bar p, \qquad B = N\bar b .
+	\end{equation*}
+
+	\vfill
+	\pause
+
+	Fluid variables:
+	\begin{equation*}
+		\bar n(t) = \frac{n(t)}{N}\ \ \text{(fraction of agents active)}, \qquad \bar x(t) = \frac{x(t)}{N}\ \ \text{(tokens left, per agent)}.
+	\end{equation*}
+\end{frame}
+
+\begin{frame}{The fluid equations}
+
+	\begin{myitem}
+		\item \alert{Interior}, $0<\bar x<\bar b$:
+		\begin{equation*}
+			\dot{\bar n} = \lambda(1-\bar n) - \nu\,\bar n, \qquad \dot{\bar x} = \bar p - c\,\bar n .
+		\end{equation*}
+		\item<2-> \alert{Full bucket}, $\bar x=\bar b$ and $c\bar n<\bar p$: $\ \dot{\bar x}=0$, and $\bar n$ as in the interior.
+		\item<3-> \alert{Empty bucket}, $\bar x=0$ and $c\bar n>\bar p$: $\ \dot{\bar x}=0$, and the fleet is \alert{throttled}:
+		\begin{equation*}
+			\dot{\bar n} = \lambda(1-\bar n) - \nu\,\frac{\bar p}{c} .
+		\end{equation*}
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{Convergence}{Work in progress}
+
+	\begin{myitem}
+		\item Expected: $\big(n(t)/N,\ x(t)/N\big) \to \big(\bar n(t),\bar x(t)\big)$ on compact time intervals, as $N\to\infty$.
+		\item<2-> In the interior, a \alert{density-dependent} jump process \cite{Kurtz1970,EthierKurtz1986}.
+		\item<3-> At the boundaries the vector field is discontinuous: the limit \alert{slides} along them.
+	\end{myitem}
+
+	\vfill
+	\uncover<4->{
+	\begin{block}{}
+		No formal proof yet; it should follow from standard arguments for density-dependent processes in the Kurtz setting.
+	\end{block}
+	}
+\end{frame}
+
+\begin{frame}{Phase portrait: over-provisioned}
+
+	\begin{columns}
+		\begin{column}{0.6\textwidth}
+			\input{figuras/phase_over.tex}
+		\end{column}
+		\begin{column}{0.4\textwidth}
+			\begin{myitem}[1em]
+				\item The fleet relaxes to $\rho$; the bucket \alert{fills}.
+				\item Equilibrium $(\rho,\bar b)$: no throttling.
+				\item Refill wasted at rate $N(\bar p - c\rho)$: of order $N$.
+			\end{myitem}
+			\vfill
+			{\footnotesize Green edge: full bucket. Red edge: empty bucket, fleet throttled. $\lambda=1$, $\nu=3$, $c=1$.}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Phase portrait: under-provisioned}
+
+	\begin{columns}
+		\begin{column}{0.6\textwidth}
+			\input{figuras/phase_under.tex}
+		\end{column}
+		\begin{column}{0.4\textwidth}
+			\begin{myitem}[1em]
+				\item The bucket \alert{drains} and the fleet is throttled.
+				\item The flow \alert{slides} along the empty boundary\ldots
+				\item \ldots to an equilibrium $\bar n_T$ \alert{above} $\rho$.
+			\end{myitem}
+			\vfill
+			{\footnotesize Green edge: full bucket. Red edge: empty bucket, fleet throttled. $\lambda=1$, $\nu=3$, $c=1$.}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Under-provisioning: the fleet piles up}
+
+	\begin{block}{}
+		\begin{center}
+		The flow slides along the empty boundary to an equilibrium that sits \alert{above} $\rho$:
+		\begin{equation*}
+			\bar n_T = 1 - \frac{\nu\,\bar p}{\lambda\,c} \;>\; \rho .
+		\end{equation*}
+		\end{center}
+	\end{block}
+
+	\vfill
+	\pause
+
+	\begin{myitem}[1em]
+		\item It stays throttled, $c\bar n_T>\bar p$, exactly when $\bar p<c\rho$.
+		\item<3-> All the refill is burnt, none is wasted.
+		\item<4-> Stalled tasks keep \alert{more agents busy} at once: tasks last $c\bar n_T/\bar p>1$ times longer.
+		\item<5-> The fleet relaxes at rate $\lambda$ instead of $\gamma$.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{What the fluid limit tells us}
+
+	\begin{myitem}
+		\item Over-provisioned: the bucket ends \alert{full}, waste of order $N$.
+		\item Under-provisioned: the bucket ends \alert{empty}, and the fleet piles up.
+		\item<2-> Balanced, $\bar p=c\rho$: at $\bar n=\rho$, $\dot{\bar x}=0$, so \alert{every} level $\bar x\in[0,\bar b]$ is an equilibrium.
+	\end{myitem}
+
+	\vfill
+	\uncover<3->{
+	\begin{block}{}
+		\begin{center}
+		At the fluid scale the quota does not matter, and the balanced plan is \alert{degenerate}.\\
+		The fluctuations decide: zoom in by $\sqrt N$.
+		\end{center}
+	\end{block}
+	}
+\end{frame}
+
+%=====================================================================
+\section{Square-root provisioning}
+%=====================================================================
 
 \begin{frame}{How should the plan scale with the fleet?}
 
@@ -1183,11 +1313,12 @@
 
 \begin{frame}{Messages from the talk}
 
-	\begin{myitem}
+	\begin{myitem}[1.1em]
 		\item A token quota shared by a fleet of agents is a \alert{flow-level token bucket}: a PDMP with state (active agents, tokens left).
 		\item The \alert{empty bucket throttles} the fleet: a feedback fluid queue.
 		\item Real spectrum from \alert{reversibility}.
 		\item Existence, uniqueness and positivity from a \alert{$2\times2$ Perron--Frobenius} argument.
+		\item \alert{Fluid limit}: full or empty; under-provisioning piles up the fleet above $\rho$.
 		\item \alert{Square-root provisioning} (work in progress): a refill margin of order $\sqrt N$ above the mean burn, and a quota of order $\sqrt N$ suffices.
 	\end{myitem}
 \end{frame}
