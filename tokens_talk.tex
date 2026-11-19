@@ -108,7 +108,7 @@
 %% ---------------------------------------------------------------------
 %% Notation used throughout
 %%   N agents, activation rate lambda, demand Y ~ Exp(mu) tokens, burn rate c
-%%   nu = mu c, gamma = lambda + nu, rho = lambda/gamma; \nb = N rho (mean number active)
+%%   nu = mu c, rho = lambda/(lambda + nu); \nb = N rho (mean number active)
 %%   fluid variables: \bar n = n/N, \bar x = x/N, \bar p = p/N, \bar b = B/N
 %%   quota x in [0,B], refill p, drift r_n = p - n c, R = diag(r_n), Q = Engset generator, n* = floor(p/c)
 %%   sigma_N = sqrt(N rho (1-rho)), theta_k eigenvalues
@@ -177,50 +177,44 @@
 	\end{myitem}
 \end{frame}
 
-\begin{frame}{Where this came from: a battery-backed EV charger}
+\begin{frame}{Rate limiting}
 
-	\begin{columns}
-		\begin{column}{0.48\textwidth}
-			\begin{itemize}
-			\item A \alert{battery} between grid and charger: recharged slowly, discharged fast.
-			\item Fast charging at $p_2$ while $x>0$; when the battery is \alert{empty}, only the grid rate $p_1<p_2$.
-			\item<2-> Single-server loss system \cite{BibiloniFerragut2026}: closed form, with \alert{decoupling} $f_1 = \frac{p_0}{c} f_0$, $f_0\propto e^{\theta x}$.
-			\end{itemize}
-		\end{column}
-		\begin{column}{0.52\textwidth}
-			\begin{center}
-			\begin{tikzpicture}[every node/.style={font=\small}]
-				\node[draw, thick, rounded corners, fill=azulcito!15!white, minimum width=1.5cm, minimum height=1cm] (grid) at (0,0) {Grid};
-				\node[draw, thick, circle, fill=azulcito!70!white, minimum size=1.1cm, text=white] (ch) at (4.2,0) {EV};
-				\node at (4.2,.95) {Charger};
+	A provider wants to cap each client's \alert{long-run} usage, while still allowing \alert{bursts}.
 
-				\draw[->, thick, rojito] (5.8,0) -- node[above] {$\lambda$} (ch);
+	\vfill
+	\pause
 
-				\node[draw, thick, rounded corners, fill=verdecito!20!white, minimum width=1.4cm, minimum height=1.4cm] (bat) at (2.1,-2.2) {\includegraphics[width=.6cm]{figuras/battery_mid.png}};
-				\node[below] at (bat.south) {$x\in[0,B]$};
-				\draw[->, thick, verdecito] (grid) |- node[pos=0.75, below] {$p_0$} (bat);
-				\draw[->, thick, verdecito] (bat) -| node[pos=0.25, below] {$c$} (ch);
-				\draw[->, very thick, azulcito] (grid) -- node[above] {$p_1$} (ch);
-			\end{tikzpicture}
+	The standard mechanism gives the client \alert{credits}:
+	\begin{myitem}[0.7em]
+		\item credits accrue at a fixed rate $p$, up to a cap $B$;
+		\item every unit of usage spends one credit;
+		\item out of credits, the client is held to the accrual rate $p$.
+	\end{myitem}
 
-			\medskip
-			{\footnotesize Joint work with S.~Bibiloni (Universidad de la República).}
-			\end{center}
-		\end{column}
-	\end{columns}
+	\vfill
+	\pause
+
+	{\small Examples: LLM APIs (tokens per minute), cloud burst credits, network traffic.}
+
+	\vfill
+	\pause
+
+	\begin{block}{}
+		\begin{center}
+		This mechanism is known as a \alert{token bucket}.
+		\end{center}
+	\end{block}
 \end{frame}
 
 \begin{frame}{What is a token bucket?}
-
-	The battery behaves like a classical \alert{rate limiter}: the token bucket.
 
 	\begin{columns}
 		\begin{column}{0.46\textwidth}
 			\begin{myitem}[0.6em]
 				\item Tokens drip into a bucket at rate $p$, up to a depth $B$.
 				\item<2-> Traffic leaves only by \alert{spending tokens}: bursts up to $B$ pass at once, the long-run rate is $p$.
-				\item<3-> Bucket empty: traffic waits (\alert{shaping}) or is dropped (\alert{policing}).
-				\item<3-> Bucket full: new tokens are discarded.
+				\item<3-> Empty: traffic waits (\alert{shaping}) or is dropped (\alert{policing}).
+				\item<3-> Full: new tokens are discarded.
 			\end{myitem}
 		\end{column}
 		\begin{column}{0.54\textwidth}
@@ -342,7 +336,7 @@
 
 	\begin{block}{Notation}
 		\begin{equation*}
-			\gamma := \lambda+\nu, \qquad \rho := \frac{\lambda}{\gamma} \quad\text{(duty cycle: fraction of time active)}.
+			\rho := \frac{\lambda}{\lambda+\nu} \quad\text{(duty cycle: fraction of time active)}.
 		\end{equation*}
 	\end{block}
 \end{frame}
@@ -539,14 +533,22 @@
 
 	\begin{myitem}
 		\item If $x=0$ and $n>\ns$, the agents want $nc$ tokens per unit time, but only $p$ arrive.
-		\item<2-> \alert{Tokens are the unit of work}: a task is done when its $Y$ tokens have been burnt.
-		\item<3-> A starved agent does not slow down a stream: it \alert{stops progressing}.
+		\item The quota \alert{sticks} at $0$: every incoming token is spent at once.
+		\item It leaves $0$ when the fleet drops to $n=\ns$.
+	\end{myitem}
+
+	\vfill
+	\pause
+
+	\begin{myitem}
+		\item \alert{Tokens are the unit of work}: a task is done when its $Y$ tokens have been burnt.
+		\item<3-> So the agents are \alert{slowed down}: they share the $p$ incoming tokens, each burning at rate $p/n<c$ instead of $c$.
 	\end{myitem}
 \end{frame}
 
 \begin{frame}{The empty bucket: throttling}
 
-	The $p$ incoming tokens are \alert{shared} among the $n$ active agents: each burns at rate $p/n$, and completes at rate $\mu p/n$.
+	Each throttled agent burns at rate $p/n$, so it completes its task at rate $\mu p/n$.
 
 	\vfill
 	\pause
@@ -565,6 +567,27 @@
 		\item Work is \alert{conserved}: no task is lost, the fleet just progresses at the refill rate.
 		\item At $x=0$ the fleet's rates depend on the quota: the chain $n(t)$ is \alert{not autonomous}.
 	\end{myitem}
+\end{frame}
+
+\begin{frame}{The two boundaries, side by side}
+
+	\begin{center}
+	\renewcommand{\arraystretch}{1.5}
+	\begin{tabular}{l|l|l}
+		& \alert{full bucket}, $x=B$ & \alert{empty bucket}, $x=0$\\\hline
+		modes & filling, $n\le\ns$ & draining, $n>\ns$\\
+		quota & sticks at $B$ & sticks at $0$\\
+		refill & excess \alert{wasted} & all of it \alert{spent}\\
+		agents & unaffected: burn at $c$ & \alert{slowed}: burn at $p/n<c$\\
+		completions & $n\nu$ & $\mu p$\\
+		leaves when & $n$ rises to $\ns+1$ & $n$ drops to $\ns$
+	\end{tabular}
+	\end{center}
+
+	\vfill
+	\pause
+
+	Only the empty bucket \alert{feeds back} on the fleet.
 \end{frame}
 
 \begin{frame}{A piecewise-deterministic Markov process}
@@ -1033,8 +1056,8 @@
 	\begin{myitem}
 		\item \alert{Interior}, from $(\bar n_0,\bar x_0)$:
 		\begin{equation*}
-			\bar n(t) = \rho + (\bar n_0-\rho)\,e^{-\gamma t}, \qquad
-			\bar x(t) = \bar x_0 + (\bar p - c\rho)\,t - \frac{c}{\gamma}(\bar n_0-\rho)\big(1-e^{-\gamma t}\big),
+			\bar n(t) = \rho + (\bar n_0-\rho)\,e^{-(\lambda+\nu) t}, \qquad
+			\bar x(t) = \bar x_0 + (\bar p - c\rho)\,t - \frac{c}{\lambda+\nu}(\bar n_0-\rho)\big(1-e^{-(\lambda+\nu) t}\big),
 		\end{equation*}
 		until $\bar x$ hits $0$ or $\bar b$.
 		\item<2-> \alert{Full bucket}: $\bar x=\bar b$, and $\bar n$ as above, until $c\bar n$ rises above $\bar p$.
@@ -1050,10 +1073,10 @@
 
 	\begin{myitem}
 		\item On the empty bucket the interior field points \alert{outward}: $\dot{\bar x} = \bar p - c\bar n < 0$.
-		\item<2-> \alert{Projecting} it onto the boundary, as for a reflected ODE, would keep $\dot{\bar n} = \lambda - \gamma\bar n$, with equilibrium $\rho$.
+		\item<2-> \alert{Projecting} it onto the boundary, as for a reflected ODE, would keep $\dot{\bar n} = \lambda - (\lambda+\nu)\bar n$, with equilibrium $\rho$.
 		\item<3-> The throttle changes the $\bar n$ equation too:
 		\begin{equation*}
-			\dot{\bar n} = \lambda(1-\bar n) - \mu\bar p = \underbrace{\lambda-\gamma\bar n}_{\text{projection}} + \underbrace{\mu\,(c\bar n - \bar p)}_{>0} .
+			\dot{\bar n} = \lambda(1-\bar n) - \mu\bar p = \underbrace{\lambda-(\lambda+\nu)\bar n}_{\text{projection}} + \underbrace{\mu\,(c\bar n - \bar p)}_{>0} .
 		\end{equation*}
 		\item<4-> The extra term is the work that \alert{cannot be completed}: tasks stall, agents stay active.
 	\end{myitem}
@@ -1152,7 +1175,7 @@
 		\item It stays throttled, $c\bar n_T>\bar p$, exactly when $\bar p<c\rho$.
 		\item<3-> All the refill is burnt, none is wasted.
 		\item<4-> Stalled tasks keep \alert{more agents busy} at once: tasks last $c\bar n_T/\bar p>1$ times longer.
-		\item<5-> The fleet relaxes at rate $\lambda$ instead of $\gamma$.
+		\item<5-> The fleet relaxes at rate $\lambda$ instead of $\lambda+\nu$.
 	\end{myitem}
 \end{frame}
 
