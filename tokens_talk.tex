@@ -974,31 +974,14 @@
 	\end{myitem}
 \end{frame}
 
-\begin{frame}{Explicit solutions}
-
-	On each piece the ODE is linear, and solvable in closed form:
-	\begin{myitem}[0.8em]
-		\item interior and full bucket: $\ \bar n(t) = \rho + (\bar n_0-\rho)\,e^{-(\lambda+\nu) t}$, and $\bar x$ integrates $\bar p - c\bar n$;
-		\item empty bucket: $\ \bar n(t) = \bar n_T + (\bar n_0-\bar n_T)\,e^{-\lambda t}$, with $\bar n_T = 1-\mu\bar p/\lambda$.
-	\end{myitem}
-
-	\medskip
-	The pieces are glued at the times the flow hits a boundary, or crosses $c\bar n=\bar p$.
-\end{frame}
-
-\begin{frame}{A law of large numbers}{Work in progress}
+\begin{frame}{A law of large numbers}
 
 	\begin{myitem}
 		\item Expected: $\big(n(t)/N,\ x(t)/N\big) \to \big(\bar n(t),\bar x(t)\big)$ on compact time intervals, as $N\to\infty$.
-		\item In the interior, a \alert{density-dependent} jump process \cite{Kurtz1970,EthierKurtz1986}.
+		\item In the interior, a density-dependent jump process \cite{Kurtz1970}.
 		\item At the boundaries the vector field is discontinuous: the limit \alert{slides} along them.
+		\item The proof is \alert{work in progress}; it should follow from the general theory of \cite{EthierKurtz1986}.
 	\end{myitem}
-
-	\medskip
-	\pause
-	\begin{block}{}
-		No formal proof yet; it should follow from standard arguments for density-dependent processes in the Kurtz setting.
-	\end{block}
 \end{frame}
 
 \begin{frame}{Over-provisioned: phase portrait}
@@ -1029,28 +1012,23 @@
 	\end{center}
 
 	\vfill
-	{\footnotesize $\bar p=0.3613$, $\bar b=0.2$, from $(\bar n_0,\bar x_0)=(0.9,0.10)$; $\lambda=1$, $\nu=3$, $c=1$. One PDMP path for each $N$ (solid) against the fluid solution (dashed). Fluctuations are of order $1/\sqrt N$.}
+	{\footnotesize $\bar p=0.3613$, $\bar b=0.2$, from $(\bar n_0,\bar x_0)=(0.7,0.15)$; $\lambda=1$, $\nu=3$, $c=1$. For each $N$, a typical PDMP path (median distance to the ODE among 9 runs) against the fluid solution. Fluctuations are of order $1/\sqrt N$.}
 \end{frame}
 
-\begin{frame}{Under-provisioned: what to expect}
+\begin{frame}{Under-provisioned, $\bar p<c\rho$}
 
-	\begin{myitem}
-		\item Now $c\rho>\bar p$: the fleet burns more than the refill, and the bucket \alert{drains}.
-		\item On the empty bucket the interior field points outward. \alert{Projecting} it onto the boundary would keep $\dot{\bar n} = \lambda-(\lambda+\nu)\bar n$, with equilibrium $\rho$.
-		\item The throttle changes the $\bar n$ equation too:
-		\begin{equation*}
-			\dot{\bar n} = \lambda(1-\bar n) - \mu\bar p = \underbrace{\lambda-(\lambda+\nu)\bar n}_{\text{projection}} + \underbrace{\mu\,(c\bar n - \bar p)}_{\text{stalled work}\,>0} .
-		\end{equation*}
+	\begin{myitem}[1.2em]
+		\item The bucket \alert{empties in finite time}: near $\bar n=\rho$ the fleet burns $c\rho>\bar p$.
+		\item At the fluid scale it then \alert{stays empty}: the flow slides along $\bar x=0$.
+		\item There each task takes longer, since every agent gets only $\bar p/\bar n<c$ tokens per unit time. By \alert{Little's law}, more agents are busy at once.
 	\end{myitem}
 
 	\pause
-
 	\begin{block}{}
 		\begin{center}
-		The flow \alert{slides} along the empty boundary to $\displaystyle \bar n_T = 1 - \frac{\mu\,\bar p}{\lambda} \;>\; \rho$: the fleet \alert{piles up}.
+		The fleet settles at $\displaystyle \bar n_T = 1 - \frac{\mu\,\bar p}{\lambda} \;>\; \rho$.
 		\end{center}
 	\end{block}
-	\vspace{-0.4em}{\footnotesize Consistent, $c\bar n_T>\bar p$, exactly when $\bar p<c\rho$. On the boundary the fleet relaxes at rate $\lambda$.}
 \end{frame}
 
 \begin{frame}{Under-provisioned: phase portrait}
@@ -1064,7 +1042,7 @@
 		\begin{column}{0.4\textwidth}
 			\begin{myitem}[1em]
 				\item The bucket drains; the flow hits the empty boundary and \alert{slides} along it.
-				\item Equilibrium $(\bar x,\bar n)=(0,\bar n_T)$, with $\bar n_T$ \alert{above} $\rho$.
+				\item Equilibrium $(\bar x,\bar n)=(0,\bar n_T)$: the fleet sits at $\bar n_T$ (red dashed line), well \alert{above} $\rho$.
 				\pause
 				\item The system works \alert{throttled}.
 			\end{myitem}
@@ -1081,7 +1059,7 @@
 	\end{center}
 
 	\vfill
-	{\footnotesize $\bar p=0.1723$, $\bar b=0.2$, from $(\bar n_0,\bar x_0)=(0.05,0.15)$; $\lambda=1$, $\nu=3$, $c=1$. One PDMP path for each $N$ (solid) against the fluid solution (dashed).}
+	{\footnotesize $\bar p=0.1723$, $\bar b=0.2$, from $(\bar n_0,\bar x_0)=(0.05,0.15)$; $\lambda=1$, $\nu=3$, $c=1$. For each $N$, a typical PDMP path (median distance to the ODE among 9 runs) against the fluid solution.}
 \end{frame}
 
 \begin{frame}{What the fluid limit tells us}

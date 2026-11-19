@@ -5,7 +5,8 @@ Figures added for the Seminario ML+DE version of the talk.
    equations discretised on a grid in x (upwind: x moves one grid step at rate |r_n|/h).
    Outputs, per plan:  figuras/stat_<case>_x.tex  (distribution function of x, showing the atoms)
                        figuras/stat_<case>_n.tex  (law of n against the binomial law pi)
-2. Law of large numbers: PDMP paths n/N and x/N for N = 20, 200, 2000 against the fluid ODE.
+2. Law of large numbers: PDMP paths n/N and x/N for N = 20, 500, 5000 against the fluid ODE.
+   For each N, the plotted path is the run with the median distance to the fluid path among 9 runs.
    Outputs: figuras/fluid_lln.tex (under-provisioned), figuras/fluid_lln_over.tex (over-provisioned)
 
 Model: N agents, activation rate lam, completion rate nu = mu c while tokens remain;
@@ -173,17 +174,27 @@ def thin(t, y, T, m=1500):
 
 def fig_lln(case="under"):
     """PDMP paths against the fluid ODE. pbar is chosen so that N pbar / c is not an
-    integer for N = 20, 200, 2000 (no zero-drift mode)."""
+    integer for N = 20, 500, 5000 (no zero-drift mode)."""
     if case == "under":
         pbar, bbar, n0, x0, T, fname = 0.1723, 0.2, 0.05, 0.15, 4.0, "fluid_lln.tex"
     else:
-        pbar, bbar, n0, x0, T, fname = 0.3613, 0.2, 0.9, 0.10, 4.0, "fluid_lln_over.tex"
+        pbar, bbar, n0, x0, T, fname = 0.3613, 0.2, 0.7, 0.15, 4.0, "fluid_lln_over.tex"
     rng = np.random.default_rng(2026)
     fl = fluid_path(pbar, bbar, n0, x0, T)
     nT = 1 - NU * pbar / (LAM * C)
     plots_n, plots_x = [], []
-    for N, col in [(20, "verdecito!70!black"), (200, "violetita"), (2000, "orange!90!black")]:
-        ts, ns, xs = simulate_path(N, N * pbar, N * bbar, int(round(N * n0)), N * x0, T, rng)
+    grid = np.linspace(0, T - 1e-3, 400)
+    jf = np.minimum(np.searchsorted(fl[:, 0], grid), len(fl) - 1)
+    for N, col in [(20, "verdecito!70!black"), (500, "violetita"), (5000, "orange!90!black")]:
+        # a typical run: among 9 runs, the one with the median distance to the fluid path
+        runs = []
+        for _ in range(9):
+            ts, ns, xs = simulate_path(N, N * pbar, N * bbar, int(round(N * n0)), N * x0, T, rng)
+            i = np.searchsorted(ts, grid, side="right") - 1
+            dist = max(np.max(np.abs(ns[i] / N - fl[jf, 1])), np.max(np.abs(xs[i] / N - fl[jf, 2])) / bbar)
+            runs.append((dist, ts, ns, xs))
+        runs.sort(key=lambda r: r[0])
+        _, ts, ns, xs = runs[len(runs) // 2]
         plots_n.append(rf"\addplot[{col}, const plot, thin] coordinates {{{thin(ts, ns / N, T)}}};" + "\n" + rf"\addlegendentry{{$N={N}$}}")
         plots_x.append(rf"\addplot[{col}, thin] coordinates {{{thin(ts, xs / N, T)}}};")
         print("lln path", case, N, "final n/N", ns[-1] / N, "final x/N", xs[-1] / N)
@@ -200,7 +211,7 @@ def fig_lln(case="under"):
   width=0.5\textwidth, height=0.36\textwidth, xmin=0, xmax={T}, grid=major, grid style={{gray!25}},
   xlabel={{time}}, tick label style={{font=\footnotesize}}, label style={{font=\footnotesize}}]
 \nextgroupplot[ylabel={{$n(t)/N$}}, ymin=0, ymax={nmax}, ytick={{{nticks}}}, yticklabels={{{nlabels}}},
-  legend style={{at={{(1.14,1.06)}}, anchor=south, legend columns=4, font=\scriptsize, draw=none}}]
+  legend style={{at={{(1.14,-0.42)}}, anchor=north, legend columns=4, font=\scriptsize, draw=none}}]
 \addplot[black, very thick, dashed] coordinates {{{fn}}};
 \addlegendentry{{fluid ODE}}
 {chr(10).join(plots_n)}
