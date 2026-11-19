@@ -800,104 +800,30 @@
 	\end{block}
 \end{frame}
 
-\begin{frame}{Reversibility}
-
-	A stationary Markov chain is \alert{reversible} if, run backwards in time, it has the same law.
-
-	\medskip
-	\pause
-
-	\begin{block}{Detailed balance}
-		\begin{equation*}
-			\pi_n\, Q_{nm} = \pi_m\, Q_{mn} \qquad\text{for all } n,m .
-		\end{equation*}
-	\end{block}
-
-	\medskip
-
-	\begin{myitem}
-		\item In equilibrium, the flow of probability from $n$ to $m$ equals the flow from $m$ to $n$, \alert{edge by edge}.
-		\item Stationarity, $\pi Q=0$, only asks that flows balance \alert{at each state}.
-	\end{myitem}
-\end{frame}
-
-\begin{frame}{Birth--death chains are reversible}
-
-	\begin{center}
-	\begin{tikzpicture}[->, >=stealth, node distance=1.9cm, every state/.style={minimum size=0.8cm, fill=azulcito!15!white, draw=azulcito, thick}]
-		\node[state] (0) {$0$};
-		\node[right of=0] (d1) {$\cdots$};
-		\node[state, right of=d1] (n) {$n$};
-		\node[state, right of=n, xshift=0.4cm] (n1) {\scriptsize $n{+}1$};
-		\node[right of=n1] (d2) {$\cdots$};
-		\node[state, right of=d2] (N) {$N$};
-		\path (n) edge[bend left] node[above] {\footnotesize $(N-n)\lambda$} (n1)
-		      (n1) edge[bend left] node[below] {\footnotesize $(n+1)\nu$} (n);
-		\draw[-, dashed, rojito, very thick] ($(n)!0.5!(n1)+(0,1.1)$) -- ($(n)!0.5!(n1)+(0,-1.1)$) node[below] {\footnotesize cut};
-	\end{tikzpicture}
-	\end{center}
-
-	\medskip
-
-	\begin{myitem}
-		\item In equilibrium, the flow across any cut must balance.
-		\item Only \alert{one edge} crosses the cut between $\{0,\ldots,n\}$ and $\{n+1,\ldots,N\}$, so
-		\begin{equation*}
-			\pi_n\,(N-n)\lambda = \pi_{n+1}\,(n+1)\nu .
-		\end{equation*}
-		\pause
-		\item That is detailed balance; solving it gives the binomial law.
-	\end{myitem}
-\end{frame}
-
-\begin{frame}{The space $\ell^2(\pi)$}
-
-	Inner product weighted by the stationary law, for complex vectors $u,v$:
-	\begin{equation*}
-		\brackets{u}{v}_\pi := \sum_n \pi_n\, u_n\, \bar v_n = v^*\,\Pi\,u, \qquad \Pi=\mathrm{diag}(\pi_n),\ \pi_n>0 .
-	\end{equation*}
-
-	\medskip
-
-	\begin{myitem}
-		\item A real matrix $A$ is \alert{self-adjoint} in $\ell^2(\pi)$ if $\brackets{Au}{v}_\pi = \brackets{u}{Av}_\pi$ for all $u,v$.
-		\item In matrix form: $v^*\Pi A u = v^* A^\top\Pi u$ for all $u,v$, that is,
-		\begin{equation*}
-			\Pi A = A^\top \Pi \qquad (\Pi A \text{ is symmetric}).
-		\end{equation*}
-		\item Example: any real diagonal matrix, such as $R$.
-	\end{myitem}
-\end{frame}
-
 \begin{frame}{Reversible generators are self-adjoint}
 
+	Weighted inner product on $\mathbb C^{N+1}$: $\quad \brackets{u}{v}_\pi := \sum_n \pi_n\, u_n\, \bar v_n = v^*\,\Pi\,u$, $\quad \Pi=\mathrm{diag}(\pi_n)$.
+
+	\medskip
+
+	A real matrix $A$ is self-adjoint in $\ell^2(\pi)$ iff $\ \Pi A = A^\top\Pi$. \quad In particular, any real diagonal $R$ is.
+
+	\medskip
 	\begin{theorem}
-		$Q$ is self-adjoint in $\ell^2(\pi)$ if and only if the chain is reversible.
+		$Q$ is self-adjoint in $\ell^2(\pi)$ if and only if detailed balance holds, $\pi_n Q_{nm} = \pi_m Q_{mn}$.
 	\end{theorem}
 
 	\medskip
 
-	Test on the basis vectors $e_n$, using $(Qe_m)_n = Q_{nm}$:
-	\begin{equation*}
-		\brackets{Qe_m}{e_n}_\pi = \pi_n\,Q_{nm}, \qquad \brackets{e_m}{Qe_n}_\pi = \pi_m\,Q_{mn} .
-	\end{equation*}
+	\alert{Proof.} On basis vectors, $\brackets{Qe_m}{e_n}_\pi = \pi_n Q_{nm}$ and $\brackets{e_m}{Qe_n}_\pi = \pi_m Q_{mn}$; extend by linearity. \hfill $\square$
 
 	\medskip
-
-	\begin{myitem}
-		\item[$\Rightarrow$] Self-adjointness on basis vectors is exactly \alert{detailed balance}.
-		\item[$\Leftarrow$] Detailed balance gives equality on basis vectors, hence for all $u,v$ by linearity. \hfill $\square$
-	\end{myitem}
-
-	\vfill
-	
-	{\footnotesize In matrix form: detailed balance is $\Pi Q = Q^\top\Pi$.}
-	
+	{\footnotesize The Engset chain is birth--death, hence reversible: $Q$ is self-adjoint in $\ell^2(\pi)$.}
 \end{frame}
 
 \begin{frame}{The Dirichlet form}
 
-	For a reversible generator, using that rows sum to $0$ and that $\pi_nQ_{nm}$ is symmetric:
+	Since rows sum to $0$ and $\pi_nQ_{nm}$ is symmetric:
 	\begin{equation*}
 		\brackets{Qh}{h}_\pi = -\frac12\sum_{m\neq n}\pi_n Q_{nm}\,|h_n-h_m|^2 \;\leq\; 0 .
 	\end{equation*}
@@ -905,7 +831,7 @@
 	\medskip
 
 	\begin{myitem}
-		\item Equality iff $h$ is \alert{constant} on each communicating class: for the irreducible Engset chain, iff $h$ is constant.
+		\item Equality iff $h$ is \alert{constant}, since the chain is irreducible.
 		\pause
 		\item So $Q$ is a \alert{self-adjoint, negative semidefinite} operator on $\ell^2(\pi)$: its spectrum is real and $\leq 0$, with the constants as the only zero mode.
 	\end{myitem}
