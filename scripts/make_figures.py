@@ -8,6 +8,7 @@ mu*p = nu*(p/c) instead of n*nu.
 
 Outputs (pgfplots-ready .tex files in ../figuras):
   sample_path.tex      n(t) and x(t) for one run
+  sample_phase.tex     the same run in the (x, n) plane
   dominant_rate.tex    exact dominant eigenvalue vs its square-root approximation
   throttle_scaling.tex P(throttled) vs B / (c sqrt(N rho (1-rho))) for several N
   decomposition.tex    throttled vs unthrottled: conditional law given x > 0
@@ -151,21 +152,51 @@ def fig_sample_path():
     ncoords = " ".join(f"({a:.4f},{b:.0f})" for a, b in zip(rt, rn))
     xcoords = " ".join(f"({a:.4f},{b:.4f})" for a, b in zip(rt, rx))
     nstar = int(np.floor(p / c))
+    nmax = 12
+    W0, W1 = 15.0, 25.0          # highlighted window: drain, empty, refill, full
+    # left: n(t) and x(t)
     body = rf"""%% Sample path: N={N}, lambda={lam}, nu={nu}, c={c}, p={p:.3f}, B={B}
 \begin{{tikzpicture}}
 \begin{{groupplot}}[group style={{group size=1 by 2, vertical sep=0.25cm, xlabels at=edge bottom, xticklabels at=edge bottom}},
-  width=0.95\textwidth, height=3.3cm, xmin=0, xmax={Tmax:g}, grid=major, grid style={{gray!25}},
+  width=\linewidth, height=3.6cm, xmin=0, xmax={Tmax:g}, grid=major, grid style={{gray!25}},
   tick label style={{font=\footnotesize}}, label style={{font=\footnotesize}}]
-\nextgroupplot[ylabel={{$n(t)$}}, ymin=0, ymax=12, ytick={{0,{nstar},10}}, yticklabels={{0,$n^*$,10}}]
+\nextgroupplot[ylabel={{$n(t)$}}, ymin=0, ymax={nmax}, ytick={{0,{nstar},10}}, yticklabels={{0,$n^*$,10}}]
+\fill[azulcito!10] (axis cs:{W0:g},0) rectangle (axis cs:{W1:g},{nmax});
 \addplot[const plot, azulcito, thick] coordinates {{{ncoords}}};
 \addplot[dashed, rojito, domain=0:{Tmax:g}] {{{p/c:.4f}}};
 \nextgroupplot[ylabel={{$x(t)$}}, xlabel={{time}}, ymin=-0.3, ymax={B+0.5:g}, ytick={{0,{B:g}}}, yticklabels={{0,$B$}}]
+\fill[azulcito!10] (axis cs:{W0:g},-0.3) rectangle (axis cs:{W1:g},{B+0.5:g});
 \addplot[verdecito!80!black, thick] coordinates {{{xcoords}}};
 \end{{groupplot}}
 \end{{tikzpicture}}
 """
     open(os.path.join(OUT, "sample_path.tex"), "w").write(body)
-    print("sample path: p =", p, "n* =", nstar, "points", len(rt))
+    # right: the same path in the (x, n) plane, drawn like the fluid phase portraits
+    # (x horizontal, n vertical; green edge = full bucket, red edge = empty bucket)
+    pcoords = " ".join(f"({b:.4f},{a:.0f})" for a, b in zip(rn, rx))
+    w = (rt >= W0) & (rt <= W1)
+    wcoords = " ".join(f"({b:.4f},{a:.0f})" for a, b in zip(rn[w], rx[w]))
+    i0 = np.argmax(w)
+    thr = p / c
+    body = rf"""%% Sample path in the (x, n) plane; same run as sample_path.tex
+\begin{{tikzpicture}}
+\begin{{axis}}[width=\linewidth, height=6.2cm, xmin=-0.15, xmax={B+0.15:g}, ymin=-0.5, ymax={nmax},
+  axis lines=box, xlabel={{tokens left $x$}}, ylabel={{active agents $n$}},
+  xtick={{0,{B:g}}}, xticklabels={{0,$B$}}, ytick={{0,{nstar},10}}, yticklabels={{0,$n^*$,10}},
+  tick label style={{font=\footnotesize}}, label style={{font=\footnotesize}}, clip=false]
+\fill[verdecito!8] (axis cs:0,-0.5) rectangle (axis cs:{B:g},{thr:.4f});
+\fill[rojito!6] (axis cs:0,{thr:.4f}) rectangle (axis cs:{B:g},{nmax});
+\draw[dashed, gray] (axis cs:0,{thr:.4f}) -- (axis cs:{B:g},{thr:.4f});
+\draw[line width=2.2pt, verdecito!80!black] (axis cs:{B:g},-0.5) -- (axis cs:{B:g},{thr:.4f});
+\draw[line width=2.2pt, rojito] (axis cs:0,{thr:.4f}) -- (axis cs:0,{nmax});
+\addplot[azulcito!30, line width=0.4pt] coordinates {{{pcoords}}};
+\addplot[azulcito, line width=0.7pt] coordinates {{{wcoords}}};
+\node[circle, fill=azulcito, inner sep=1.5pt] at (axis cs:{rx[i0]:.4f},{rn[i0]:.0f}) {{}};
+\end{{axis}}
+\end{{tikzpicture}}
+"""
+    open(os.path.join(OUT, "sample_phase.tex"), "w").write(body)
+    print("sample path: p =", p, "n* =", nstar, "points", len(rt), "n range", rn.min(), rn.max())
 
 
 # ---------------------------------------------------------------------------
