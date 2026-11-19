@@ -145,7 +145,7 @@ def fig_sample_path():
     # (seed picked so that this window shows an empty spell and a full spell)
     N, lam, nu, c = 50, 1.0, 3.0, 1.0
     p, B = 13.2, 10.0
-    Tmax = 15.0
+    Tmax = 30.0
     *_, rt, rn, rx = simulate(N, lam, nu, c, p, B, Tmax, True, 10, 122, True)
     sel = rt <= Tmax
     rt, rn, rx = rt[sel], rn[sel], rx[sel]
