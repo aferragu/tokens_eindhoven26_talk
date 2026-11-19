@@ -142,30 +142,30 @@ def dominant_rate(N, lam, nu, c, p):
 # ---------------------------------------------------------------------------
 def fig_sample_path():
     # parameters chosen so that the quota spends most of its time in the interior
-    # (long run: ~9% empty, ~15% full, ~76% interior)
-    N, lam, nu, c = 20, 1.0, 3.0, 1.0
-    p, B = 5.2, 4.0
-    Tmax = 30.0
-    *_, rt, rn, rx = simulate(N, lam, nu, c, p, B, Tmax, True, 10, 16, True)
+    # (seed picked so that this window shows an empty spell and a full spell)
+    N, lam, nu, c = 50, 1.0, 3.0, 1.0
+    p, B = 13.2, 10.0
+    Tmax = 15.0
+    *_, rt, rn, rx = simulate(N, lam, nu, c, p, B, Tmax, True, 10, 122, True)
     sel = rt <= Tmax
     rt, rn, rx = rt[sel], rn[sel], rx[sel]
     ncoords = " ".join(f"({a:.4f},{b:.0f})" for a, b in zip(rt, rn))
     xcoords = " ".join(f"({a:.4f},{b:.4f})" for a, b in zip(rt, rx))
     nstar = int(np.floor(p / c))
-    nmax = 12
-    W0, W1 = 15.0, 25.0          # highlighted window: drain, empty, refill, full
+    nmax = 25
+    W0, W1 = 6.0, 13.0           # highlighted window: empty, refill, full
     # left: n(t) and x(t)
     body = rf"""%% Sample path: N={N}, lambda={lam}, nu={nu}, c={c}, p={p:.3f}, B={B}
 \begin{{tikzpicture}}
 \begin{{groupplot}}[group style={{group size=1 by 2, vertical sep=0.25cm, xlabels at=edge bottom, xticklabels at=edge bottom}},
-  width=\linewidth, height=3.6cm, xmin=0, xmax={Tmax:g}, grid=major, grid style={{gray!25}},
+  width=\linewidth, height=3.5cm, xmin=0, xmax={Tmax:g}, grid=major, grid style={{gray!25}},
   tick label style={{font=\footnotesize}}, label style={{font=\footnotesize}}]
-\nextgroupplot[ylabel={{$n(t)$}}, ymin=0, ymax={nmax}, ytick={{0,{nstar},10}}, yticklabels={{0,$n^*$,10}}]
+\nextgroupplot[ylabel={{$n(t)$}}, ymin=0, ymax={nmax}, ytick={{0,{nstar},{nmax}}}, yticklabels={{0,$n^*$,{nmax}}}]
 \fill[azulcito!10] (axis cs:{W0:g},0) rectangle (axis cs:{W1:g},{nmax});
 \addplot[const plot, azulcito, thick] coordinates {{{ncoords}}};
 \addplot[dashed, rojito, domain=0:{Tmax:g}] {{{p/c:.4f}}};
-\nextgroupplot[ylabel={{$x(t)$}}, xlabel={{time}}, ymin=-0.3, ymax={B+0.5:g}, ytick={{0,{B:g}}}, yticklabels={{0,$B$}}]
-\fill[azulcito!10] (axis cs:{W0:g},-0.3) rectangle (axis cs:{W1:g},{B+0.5:g});
+\nextgroupplot[ylabel={{$x(t)$}}, xlabel={{time}}, ymin={-0.08*B:g}, ymax={1.12*B:g}, ytick={{0,{B:g}}}, yticklabels={{0,$B$}}]
+\fill[azulcito!10] (axis cs:{W0:g},{-0.08*B:g}) rectangle (axis cs:{W1:g},{1.12*B:g});
 \addplot[verdecito!80!black, thick] coordinates {{{xcoords}}};
 \end{{groupplot}}
 \end{{tikzpicture}}
@@ -180,9 +180,9 @@ def fig_sample_path():
     thr = p / c
     body = rf"""%% Sample path in the (x, n) plane; same run as sample_path.tex
 \begin{{tikzpicture}}
-\begin{{axis}}[width=\linewidth, height=6.2cm, xmin=-0.15, xmax={B+0.15:g}, ymin=-0.5, ymax={nmax},
+\begin{{axis}}[width=\linewidth, height=5.6cm, xmin={-0.04*B:g}, xmax={1.04*B:g}, ymin=-0.5, ymax={nmax},
   axis lines=box, xlabel={{tokens left $x$}}, ylabel={{active agents $n$}},
-  xtick={{0,{B:g}}}, xticklabels={{0,$B$}}, ytick={{0,{nstar},10}}, yticklabels={{0,$n^*$,10}},
+  xtick={{0,{B:g}}}, xticklabels={{0,$B$}}, ytick={{0,{nstar},{nmax}}}, yticklabels={{0,$n^*$,{nmax}}},
   tick label style={{font=\footnotesize}}, label style={{font=\footnotesize}}, clip=false]
 \fill[verdecito!8] (axis cs:0,-0.5) rectangle (axis cs:{B:g},{thr:.4f});
 \fill[rojito!6] (axis cs:0,{thr:.4f}) rectangle (axis cs:{B:g},{nmax});
