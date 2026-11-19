@@ -1000,7 +1000,7 @@
 				\item The system works with a \alert{full bucket}.
 			\end{myitem}
 			\vfill
-			{\footnotesize Green edge: full bucket. Red edge: empty bucket, fleet throttled. $\lambda=1$, $\nu=3$, $c=1$.}
+			{\footnotesize Green edge: full bucket. Red edge: empty bucket, fleet throttled. $\lambda=1$, $\nu=3$, $c=1$ ($c\rho=0.25$), $\bar p=0.4$.}
 		\end{column}
 	\end{columns}
 \end{frame}
@@ -1012,7 +1012,7 @@
 	\end{center}
 
 	\vfill
-	{\footnotesize $\bar p=0.3613$, $\bar b=0.2$, from $(\bar n_0,\bar x_0)=(0.7,0.15)$; $\lambda=1$, $\nu=3$, $c=1$. Fluctuations are of order $1/\sqrt N$.}
+	{\footnotesize $\bar p=0.4$, $\bar b=0.2$, from $(\bar n_0,\bar x_0)=(0.7,0.15)$; $\lambda=1$, $\nu=3$, $c=1$. Fluctuations are of order $1/\sqrt N$.}
 \end{frame}
 
 \begin{frame}{Under-provisioned, $\bar p<c\rho$}
@@ -1047,7 +1047,7 @@
 				\item The system works \alert{throttled}.
 			\end{myitem}
 			\vfill
-			{\footnotesize Green edge: full bucket. Red edge: empty bucket, fleet throttled. $\lambda=1$, $\nu=3$, $c=1$.}
+			{\footnotesize Green edge: full bucket. Red edge: empty bucket, fleet throttled. $\lambda=1$, $\nu=3$, $c=1$ ($c\rho=0.25$), $\bar p=0.2$.}
 		\end{column}
 	\end{columns}
 \end{frame}
@@ -1059,7 +1059,7 @@
 	\end{center}
 
 	\vfill
-	{\footnotesize $\bar p=0.1723$, $\bar b=0.2$, from $(\bar n_0,\bar x_0)=(0.05,0.15)$; $\lambda=1$, $\nu=3$, $c=1$.}
+	{\footnotesize $\bar p=0.2$, $\bar b=0.2$, from $(\bar n_0,\bar x_0)=(0.05,0.06)$; $\lambda=1$, $\nu=3$, $c=1$.}
 \end{frame}
 
 \begin{frame}{What the fluid limit tells us}
@@ -1087,23 +1087,46 @@
 
 \begin{frame}{Ongoing work: a quota of order $\sqrt N$}
 
-	\begin{columns}
-		\begin{column}{0.45\textwidth}
-			\begin{myitem}[0.9em]
-				\item Refill a margin above the mean burn:
-				\begin{gather*}
-					p = cN\rho + \beta\,c\,\sN,\\
-					\sN = \sqrt{N\rho(1-\rho)} .
-				\end{gather*}
-				\pause
-				\item \alert{Claim:} a quota of order $\sqrt N$, $B = b\,c\,\sN$, keeps throttling at a \alert{fixed positive level}, as in square-root staffing \cite{HalfinWhitt1981}.
-				\item Under study: the diffusion limit.
-			\end{myitem}
-		\end{column}
-		\begin{column}{0.55\textwidth}
-			\input{figuras/throttle_scaling.tex}
+	\begin{myitem}
+		\item The fleet fluctuates around $N\rho$ by $\sN := \sqrt{N\rho(1-\rho)}$.
+		\item Refill a margin above the mean burn, on the scale of these fluctuations:
+		\begin{equation*}
+			p = cN\rho + \beta\,c\,\sN .
+		\end{equation*}
+	\end{myitem}
 
-			{\footnotesize $\beta=1$. As $N$ grows, throttling depends on $b$, not on $N$.}
+	\medskip
+	\pause
+	\begin{block}{Claim}
+		A quota of order $\sqrt N$, $B = b\,c\,\sN$, keeps the throttling probability at a \alert{fixed positive level} as $N\to\infty$, as in square-root staffing \cite{HalfinWhitt1981}.
+	\end{block}
+\end{frame}
+
+\begin{frame}{The diffusion scaling}
+
+	\begin{columns}
+		\begin{column}{0.48\textwidth}
+			\input{figuras/diffusion_path.tex}
+
+			{\footnotesize $N=2000$, $\beta=0.5$, $b=1$; $\lambda=1$, $\nu=3$, $c=1$.}
+		\end{column}
+		\begin{column}{0.52\textwidth}
+			Scale: $\ \xi = \dfrac{n-N\rho}{\sN}$, $\ \hat x = \dfrac{x}{c\,\sN}\in[0,b]$.
+
+			\medskip
+			\pause
+			\begin{block}{Conjecture}
+				\small
+				$(\hat x,\xi)$ converges to a diffusion on $[0,b]\times\R$:
+				\begin{align*}
+					d\hat x &= (\beta-\xi)\,dt,\\
+					d\xi &= -(\lambda+\nu)\,\xi\,dt + \sqrt{2(\lambda+\nu)}\,dW,
+				\end{align*}
+				held at $\hat x=b$ while $\xi<\beta$, and at $\hat x=0$ while $\xi>\beta$, where the fleet is throttled:
+				\begin{equation*}
+					d\xi = -(\lambda\,\xi+\nu\,\beta)\,dt + \sqrt{2(\lambda+\nu)}\,dW .
+				\end{equation*}
+			\end{block}
 		\end{column}
 	\end{columns}
 \end{frame}

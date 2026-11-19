@@ -89,9 +89,10 @@ def panel(pbar, starts, fname, title):
         eqnode = rf"\node[font=\footnotesize, anchor=west] at (axis cs:{BBAR+0.006},{RHO}) {{$(\bar b,\rho)$}};"
         extra = ""
     else:
-        yticks = f"0,{thr},{RHO},{neq},1"
-        yticklabels = r"0,$\frac{\bar p}{c}$,$\rho$,$\bar n_T$,1"
-        eqnode = ""
+        # pbar/c is close to rho here: label it on the right edge instead of the axis
+        yticks = f"0,{RHO},{neq:.4f},1"
+        yticklabels = r"0,$\rho$,$\bar n_T$,1"
+        eqnode = rf"\node[font=\footnotesize, anchor=west] at (axis cs:{BBAR+0.006},{thr}) {{$\bar p/c$}};"
         extra = (rf"\draw[-stealth, very thick, rojito] (axis cs:0.022,{RHO+0.03}) -- node[right, font=\scriptsize] {{slides}} (axis cs:0.022,{neq-0.04});"
                  + "\n" + rf"\draw[dashed, rojito, thick] (axis cs:0,{neq}) -- (axis cs:{BBAR},{neq});")
     body = rf"""%% Fluid phase portrait (x horizontal, n vertical, as in the state-space picture)
@@ -129,8 +130,8 @@ def panel(pbar, starts, fname, title):
 
 if __name__ == "__main__":
     # over-provisioned: pbar > c rho = 0.25
-    panel(0.36, [(0.9, 0.10), (0.6, 0.17), (0.05, 0.03), (0.15, 0.17), (0.95, 0.025)],
+    panel(0.4, [(0.9, 0.10), (0.6, 0.17), (0.05, 0.03), (0.15, 0.17), (0.95, 0.025)],
           "phase_over.tex", r"Over-provisioned, $\bar p > c\rho$")
     # under-provisioned: pbar < c rho
-    panel(0.17, [(0.05, 0.19), (0.02, 0.06), (0.4, 0.17), (0.85, 0.12), (0.78, 0.07)],
+    panel(0.2, [(0.05, 0.19), (0.02, 0.06), (0.4, 0.17), (0.85, 0.12), (0.78, 0.07)],
           "phase_under.tex", r"Under-provisioned, $\bar p < c\rho$")
