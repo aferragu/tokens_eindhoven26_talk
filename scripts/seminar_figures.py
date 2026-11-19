@@ -185,7 +185,7 @@ def fig_lln(case="under"):
     plots_n, plots_x = [], []
     grid = np.linspace(0, T - 1e-3, 400)
     jf = np.minimum(np.searchsorted(fl[:, 0], grid), len(fl) - 1)
-    for N, col in [(50, "verdecito!70!black"), (500, "orange!90!black")]:
+    for N, col in [(50, "gray!60, thin"), (500, "rojito!85, semithick")]:
         # a typical run: among 9 runs, the one with the median distance to the fluid path
         runs = []
         for _ in range(9):
@@ -195,8 +195,8 @@ def fig_lln(case="under"):
             runs.append((dist, ts, ns, xs))
         runs.sort(key=lambda r: r[0])
         _, ts, ns, xs = runs[len(runs) // 2]
-        plots_n.append(rf"\addplot[{col}, const plot, thin] coordinates {{{thin(ts, ns / N, T)}}};" + "\n" + rf"\addlegendentry{{$N={N}$}}")
-        plots_x.append(rf"\addplot[{col}, thin] coordinates {{{thin(ts, xs / N, T)}}};")
+        plots_n.append(rf"\addplot[{col}, const plot] coordinates {{{thin(ts, ns / N, T)}}};" + "\n" + rf"\addlegendentry{{$N={N}$}}")
+        plots_x.append(rf"\addplot[{col}] coordinates {{{thin(ts, xs / N, T)}}};")
         print("lln path", case, N, "final n/N", ns[-1] / N, "final x/N", xs[-1] / N)
     fn = " ".join(f"({a:.4f},{b:.4f})" for a, b in zip(fl[:, 0], fl[:, 1]))
     fx = " ".join(f"({a:.4f},{b:.4f})" for a, b in zip(fl[:, 0], fl[:, 2]))
@@ -215,11 +215,11 @@ def fig_lln(case="under"):
 \nextgroupplot[ylabel={{$n(t)/N$}}, ymin=0, ymax={nmax}, ytick={{{nticks}}}, yticklabels={{{nlabels}}},
   legend style={{at={{{legpos}}}, anchor={leganchor}, legend columns=1, font=\tiny, draw=none, fill=white, fill opacity=0.6, text opacity=1}},
   legend image post style={{line width=1.3pt}}]
-\addplot[black, very thick, dashed] coordinates {{{fn}}};
+\addplot[azulcito, line width=2pt] coordinates {{{fn}}};
 \addlegendentry{{fluid ODE}}
 {chr(10).join(plots_n)}
 \nextgroupplot[ylabel={{$x(t)/N$}}, ymin=-0.01, ymax={bbar+0.02}, ytick={{0,{bbar}}}, yticklabels={{0,$\bar b$}}]
-\addplot[black, very thick, dashed] coordinates {{{fx}}};
+\addplot[azulcito, line width=2pt] coordinates {{{fx}}};
 {chr(10).join(plots_x)}
 \end{{groupplot}}
 \end{{tikzpicture}}
