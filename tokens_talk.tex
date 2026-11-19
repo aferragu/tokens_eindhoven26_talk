@@ -908,23 +908,9 @@
 		\item<2-> \alert{Step 3.} If $\brackets{Rh}{h}_\pi\neq 0$: $\quad\theta = \dfrac{\brackets{Qh}{h}_\pi}{\brackets{Rh}{h}_\pi}\in\R$.
 		\item<3-> \alert{Step 4.} If $\brackets{Rh}{h}_\pi= 0$: then $\brackets{Qh}{h}_\pi=0$, so by the Dirichlet form $h$ is constant and $Qh=0$. Thus $\theta\,Rh=0$ with $Rh\neq0$ ($R$ invertible), so $\theta=0$. \hfill $\square$
 	\end{myitem}
-\end{frame}
-
-\begin{frame}{Why the Dirichlet form is needed}
-
-	\begin{myitem}
-		\item $R$ is \alert{indefinite}, so $\brackets{Rh}{h}_\pi$ can vanish for $h\neq 0$.
-		\item<2-> Self-adjointness of $Q$ and $R$ alone does not give a real spectrum:
-		\begin{equation*}
-			\begin{pmatrix}0&1\\1&0\end{pmatrix} h = \theta \begin{pmatrix}1&0\\0&-1\end{pmatrix} h \quad\Longrightarrow\quad \theta=\pm i .
-		\end{equation*}
-		\item<3-> What saves us is the \alert{sign} of $\brackets{Qh}{h}_\pi$: a generator, not just a symmetric matrix.
-	\end{myitem}
 
 	\vfill
-	\uncover<4->{
 	{\footnotesize Reality is proved by other routes in \cite{AMS1982} (an explicit discriminant) and \cite{Mitra1988} (a Schur complement and Sylvester's law of inertia).}
-	}
 \end{frame}
 
 %=====================================================================
