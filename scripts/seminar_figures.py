@@ -187,7 +187,7 @@ def fig_lln(case="under"):
     plots_n, plots_x = [], []
     grid = np.linspace(0, T - 1e-3, 400)
     jf = np.minimum(np.searchsorted(fl[:, 0], grid), len(fl) - 1)
-    for N, col in [(50, "gray!60, thin"), (500, "rojito!85, semithick")]:
+    for N, col in [(50, "verdecito!75!black, thin"), (500, "rojito!85, semithick")]:
         # a typical run: among 9 runs, the one with the median distance to the fluid path
         runs = []
         for _ in range(9):
@@ -217,11 +217,11 @@ def fig_lln(case="under"):
 \nextgroupplot[ylabel={{$n(t)/N$}}, ymin=0, ymax={nmax}, ytick={{{nticks}}}, yticklabels={{{nlabels}}},
   legend style={{at={{{legpos}}}, anchor={leganchor}, legend columns=1, font=\tiny, draw=none, fill=white, fill opacity=0.6, text opacity=1}},
   legend image post style={{line width=1.3pt}}]
-\addplot[azulcito, line width=2pt] coordinates {{{fn}}};
+\addplot[azulcito, line width=1.2pt] coordinates {{{fn}}};
 \addlegendentry{{fluid ODE}}
 {chr(10).join(plots_n)}
 \nextgroupplot[ylabel={{$x(t)/N$}}, ymin=-0.01, ymax={bbar+0.02}, ytick={{0,{bbar}}}, yticklabels={{0,$\bar b$}}]
-\addplot[azulcito, line width=2pt] coordinates {{{fx}}};
+\addplot[azulcito, line width=1.2pt] coordinates {{{fx}}};
 {chr(10).join(plots_x)}
 \end{{groupplot}}
 \end{{tikzpicture}}

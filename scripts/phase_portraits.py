@@ -85,7 +85,7 @@ def panel(pbar, starts, fname, title):
             + "\n" + rf"\node[circle, fill=azulcito, inner sep=1.3pt] at (axis cs:{x0},{n0}) {{}};")
     if over:
         yticks = f"0,{RHO},{thr},1"
-        yticklabels = r"0,$\rho$,$\frac{\bar p}{c}$,1"
+        yticklabels = r"0,$\rho$,$\bar p/c$,1"
         eqnode = rf"\node[font=\footnotesize, anchor=west] at (axis cs:{BBAR+0.006},{RHO}) {{$(\bar b,\rho)$}};"
         extra = ""
     else:
