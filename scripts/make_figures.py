@@ -272,7 +272,7 @@ def fig_throttle_scaling():
     gam = lam + nu
     body = rf"""%% P(throttled) vs B/(c sqrt(N rho(1-rho))), beta={beta}, lambda={lam}, nu={nu}, c={c} (balance equations on a grid, extrapolated)
 \begin{{tikzpicture}}
-\begin{{semilogyaxis}}[width=\textwidth, height=0.62\textwidth, xmin=0, xmax=3.7,
+\begin{{semilogyaxis}}[width=0.92\textwidth, height=0.62\textwidth, xmin=0, xmax=3.7,
   grid=major, grid style={{gray!25}},
   xlabel={{scaled depth $B/(c\sigma_N)$}}, ylabel={{$P(\text{{throttled}})$}}, legend style={{at={{(0.5,1.03)}}, anchor=south, legend columns=4, font=\scriptsize}},
   tick label style={{font=\footnotesize}}, label style={{font=\footnotesize}}]

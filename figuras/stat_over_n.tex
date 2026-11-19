@@ -1,0 +1,14 @@
+%% Law of n, over-provisioned, against Binomial(N, rho); same parameters as stat_over_x.tex
+\begin{tikzpicture}
+\begin{axis}[width=\textwidth, height=0.75\textwidth, xmin=-0.7, xmax=20.7, ymin=0, ymax=0.233,
+  xtick={0,5,10,20}, xticklabels={0,$N\rho$,10,20},
+  xlabel={active agents $n$}, ylabel={probability}, grid=major, grid style={gray!25},
+  legend style={at={(0.98,0.97)}, anchor=north east, font=\scriptsize},
+  tick label style={font=\footnotesize}, label style={font=\footnotesize}]
+\addplot[ybar, bar width=4pt, fill=azulcito!70, draw=none, area legend] coordinates {(0,0.00314) (1,0.02091) (2,0.06622) (3,0.13243) (4,0.18761) (5,0.20012) (6,0.16696) (7,0.11219) (8,0.06216) (9,0.02913) (10,0.01196) (11,0.00453) (12,0.00168) (13,0.00063) (14,0.00023) (15,0.00008) (16,0.00002) (17,0.00001) (18,0.00000) (19,0.00000) (20,0.00000)};
+\addlegendentry{stationary}
+\addplot[only marks, mark=*, mark size=1.4pt, rojito] coordinates {(0,0.00317) (1,0.02114) (2,0.06695) (3,0.13390) (4,0.18969) (5,0.20233) (6,0.16861) (7,0.11241) (8,0.06089) (9,0.02706) (10,0.00992) (11,0.00301) (12,0.00075) (13,0.00015) (14,0.00003) (15,0.00000) (16,0.00000) (17,0.00000) (18,0.00000) (19,0.00000) (20,0.00000)};
+\addlegendentry{$\text{Bin}(N,\rho)$}
+\draw[dashed, gray] (axis cs:5.600,0) -- (axis cs:5.600,0.233) node[pos=0.92, right, font=\scriptsize] {$p/c$};
+\end{axis}
+\end{tikzpicture}

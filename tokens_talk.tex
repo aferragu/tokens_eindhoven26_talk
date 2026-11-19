@@ -122,7 +122,7 @@
 
 \author[Andres Ferragut, Universidad ORT Uruguay]{Andres Ferragut, Universidad ORT Uruguay}
 \institute{joint work with Diego Goldsztajn and Fernando Paganini}
-\date[TU/Eindhoven -- November 2026]{TU/Eindhoven -- November 2026}
+\date[Seminario ML+DE, Fondo Ida Holz -- November 2026]{Seminario ML+DE, Fondo Ida Holz -- November 2026}
 
 \AtBeginSection[]
 {
@@ -210,38 +210,13 @@
 	\end{columns}
 \end{frame}
 
-\begin{frame}{Strip away the batteries and the cars}
-
-	\begin{myitem}[1.2em]
-		\item A \alert{reservoir}, refilled at a constant rate, up to a cap.
-		\item<2-> Users \alert{come and go}, and draw from it fast while it lasts.
-		\item<3-> When it is empty, everyone is \alert{held to the refill rate}.
-	\end{myitem}
-
-	\vfill
-	\uncover<4->{
-	\begin{center}
-		{\Large Have we seen this before?}
-	\end{center}
-	}
-	\vfill
-\end{frame}
-
-\begin{frame}[plain]
-	\vfill
-	\begin{center}
-		{\Huge Yes!}\\[1.2em]
-		{\LARGE It is a \alert{token bucket}.}\\[1.5em]
-		{\large The classical tool of \alert{traffic shaping} in networks.}
-	\end{center}
-	\vfill
-\end{frame}
-
 \begin{frame}{What is a token bucket?}
+
+	The battery behaves like a classical \alert{rate limiter}: the token bucket.
 
 	\begin{columns}
 		\begin{column}{0.46\textwidth}
-			\begin{myitem}[1em]
+			\begin{myitem}[0.6em]
 				\item Tokens drip into a bucket at rate $p$, up to a depth $B$.
 				\item<2-> Traffic leaves only by \alert{spending tokens}: bursts up to $B$ pass at once, the long-run rate is $p$.
 				\item<3-> Bucket empty: traffic waits (\alert{shaping}) or is dropped (\alert{policing}).
@@ -279,47 +254,26 @@
 
 	\vfill
 	\uncover<4->{
-	{\footnotesize Introduced to police and shape traffic in ATM and the Internet \cite{Turner1986}; today it is the standard rate limiter of APIs and cloud services.}
+	{\footnotesize Introduced to shape network traffic \cite{Turner1986}; today it is the standard rate limiter of APIs and cloud services, LLM token quotas included.}
 	}
 \end{frame}
 
-\begin{frame}{Token buckets are fluid queues}
+\begin{frame}{Token buckets in the fluid-queue literature}
 
 	\begin{myitem}
 		\item The token level is a \alert{fluid buffer}: filled at rate $p$, drained by the traffic.
-		\item<2-> Token buckets fed by \alert{Markov-modulated} on--off sources were analysed with spectral methods in the early 1990s, e.g.\ \cite{ElwalidMitra1991}.
+		\item<2-> Buffers fed by Markov-modulated on--off sources have been modelled before, with spectral methods: \cite{Kosten1974}, \cite{AMS1982}, \cite{Mitra1988}, and token buckets in \cite{ElwalidMitra1991}.
+		\item<3-> Sources whose rates depend on the buffer: \alert{feedback fluid queues} \cite{MMS2003}.
 	\end{myitem}
 
 	\vfill
-	\uncover<3->{
+	\uncover<4->{
 	\begin{block}{}
 		\begin{center}
 		An \alert{old fluid queue}, in a \alert{new setting}: AI agents sharing a token quota.
 		\end{center}
 	\end{block}
 	}
-\end{frame}
-
-\begin{frame}{The connection: a shared token bucket}
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.25}
-	\begin{tabular}{l|l}
-		\alert{token bucket} & \alert{agent fleet}\\\hline
-		tokens in the bucket & remaining quota $x$\\
-		bucket depth & quota cap $B$\\
-		token rate & refill rate $p$\\
-		peak rate & burn rate $c$ of an agent\\
-		flows arriving & agents activating\\
-		empty: held to the token rate & empty: \alert{throttled}\\
-		full: tokens discarded & full: refill \alert{wasted}
-	\end{tabular}
-	\end{center}
-
-	\vfill
-	\pause
-
-	The interesting state is the \alert{empty} bucket.
 \end{frame}
 
 \begin{frame}{The new setting}
@@ -336,10 +290,10 @@
 
 	\begin{myitem}[1.1em]
 		\item A \alert{flow-level model} of a token quota shared by a fleet of on--off agents: a PDMP with state (active agents, tokens left).
-		\item All eigenvalues of the stationary problem are \alert{real}: a short proof from reversibility.
-		\item The stationary law \alert{exists, is unique and positive}: a $2\times 2$ Perron--Frobenius argument.
-		\item \alert{Fluid limit}: the bucket ends full or empty; under-provisioning makes the fleet \alert{pile up}.
-		\item \alert{Square-root provisioning} (work in progress): a refill margin of order $\sqrt N$ above the mean burn should need a quota of order $\sqrt N$ only.
+		\item The stationary equations are a linear ODE system, $R\,\mathbf f' = Q^\top\mathbf f$, whose eigenvalues are all \alert{real}: a proof from \alert{reversibility}.
+		\item The stationary law \alert{exists, is unique and positive}.
+		\item The \alert{fluid limit} is a piecewise-smooth ODE: the bucket ends full or empty, and under-provisioning makes the fleet \alert{pile up}.
+		\item Ongoing work: a quota of order $\sqrt N$ should suffice.
 	\end{myitem}
 \end{frame}
 
@@ -444,7 +398,7 @@
 		\begin{equation*}
 			\pi_n\,(N-n)\lambda = \pi_{n+1}\,(n+1)\nu .
 		\end{equation*}
-		We will use it \alert{twice}: for the spectrum and for positivity.
+		It is the key to the spectrum.
 	\end{block}
 \end{frame}
 
@@ -645,21 +599,63 @@
 
 	We seek a \alert{mixed measure}:
 	\begin{myitem}
-		\item densities $f_n(x)$ on $(0,B)$;
+		\item densities $f_n(x)$ on $(0,B)$, one for each mode $n$;
 		\item atoms $\pi^B_n$ at $x=B$ for the filling modes $n\le\ns$;
 		\item atoms $\pi^0_n$ at $x=0$ for the draining modes $n>\ns$.
 	\end{myitem}
+\end{frame}
+
+\begin{frame}{Balance equations, intuitively}
+
+	Think of probability mass moving along each line $n$ at speed $r_n$, and jumping between lines.
 
 	\vfill
 	\pause
 
-	\alert{Interior}, with $\mathbf{f}=(f_0,\ldots,f_N)$ a row vector and $R=\mathrm{diag}(r_n)$:
+	In a thin slab $[x,x+dx]$ of line $n$, in equilibrium:
 	\begin{equation*}
-		\mathbf{f}'(x)\,R = \mathbf{f}(x)\,Q, \qquad x\in(0,B).
+		\underbrace{\frac{d}{dx}\big[r_n f_n(x)\big]}_{\text{net transport out}}
+		= \underbrace{(N-n+1)\lambda\, f_{n-1}(x) + (n+1)\nu\, f_{n+1}(x)}_{\text{jumps in}}
+		- \underbrace{\big[(N-n)\lambda + n\nu\big] f_n(x)}_{\text{jumps out}} .
 	\end{equation*}
+
+	\vfill
+	\pause
+
+	{\footnotesize Rigorously: these follow from $\int\mathcal A\psi\,d\pi=0$ for all $\psi$ in the domain of the extended generator, integrating the transport term by parts.}
+\end{frame}
+
+\begin{frame}{Balance equations in vector form}
+
+	Collect the densities in a \alert{column} vector $\mathbf f(x)=\big(f_0(x),\ldots,f_N(x)\big)^\top$, and let $R=\mathrm{diag}(r_n)$.
+
+	\vfill
+	\pause
+
+	\begin{myitem}
+		\item Jumps in minus jumps out, at mode $n$: $\ \sum_m f_m(x)\,Q_{mn} = \big(Q^\top\mathbf f(x)\big)_n$.
+		\item<3-> So the balance equations read
+	\end{myitem}
+	\uncover<3->{
+	\begin{block}{}
+		\begin{equation*}
+			R\,\mathbf f'(x) = Q^\top\,\mathbf f(x), \qquad x\in(0,B).
+		\end{equation*}
+	\end{block}
+	}
+
+	\vfill
+	\begin{myitem}
+		\item<4-> A linear ODE system with constant coefficients: the \alert{forward} equation, hence $Q^\top$.
+		\item<4-> $R$ is \alert{indefinite}: some modes fill, some drain.
+	\end{myitem}
 \end{frame}
 
 \begin{frame}{Boundary conditions}
+
+	Mass reaching a boundary \alert{sticks} there; it leaks back into the interior through a single \alert{gateway}.
+
+	\medskip
 
 	\begin{columns}[T]
 		\begin{column}{0.5\textwidth}
@@ -688,31 +684,14 @@
 \end{frame}
 
 %=====================================================================
-\section{Spectral structure}
+\section{Reversibility and the spectrum}
 %=====================================================================
-
-\begin{frame}{Related models}
-
-	\begin{myitem}
-		\item Fluid buffers modulated by on--off sources have a long history: \cite{Kosten1974}, \cite{AMS1982}, the finite buffer of \cite{Mitra1988}, and token buffers \cite{ElwalidMitra1991}.
-		\item<2-> Sources whose rates depend on the buffer: \alert{feedback fluid queues} \cite{MMS2003}.
-	\end{myitem}
-
-	\vfill
-	\uncover<3->{
-	\begin{block}{}
-		\begin{center}
-		We use the same objects (eigenvalues, boundary conditions), with \alert{self-contained} proofs.
-		\end{center}
-	\end{block}
-	}
-\end{frame}
 
 \begin{frame}{Exponential solutions}
 
-	Try $\mathbf{f}(x)=\phi\,e^{\theta x}$ in $\mathbf{f}'R=\mathbf{f}Q$:
+	Try $\mathbf{f}(x)=\phi\,e^{\theta x}$, with $\phi$ a column vector, in $R\,\mathbf f'=Q^\top\mathbf f$:
 	\begin{equation*}
-		\theta\,\phi R = \phi Q .
+		\theta\,R\,\phi = Q^\top\phi .
 	\end{equation*}
 
 	\vfill
@@ -723,7 +702,7 @@
 		\begin{equation*}
 			\mathbf{f}(x) = \sum_{k=0}^{N} a_k\,\phi_k\,e^{\theta_k x}.
 		\end{equation*}
-		\item $\theta=0$ is always an eigenvalue, with $\phi=\pi$ the binomial law.
+		\item $\theta=0$ is always an eigenvalue, with $\phi=\pi$: indeed $Q^\top\pi=0$ is stationarity of the fleet.
 	\end{myitem}
 \end{frame}
 
@@ -745,108 +724,182 @@
 	\end{block}
 \end{frame}
 
-\begin{frame}{All the eigenvalues are real}
+\begin{frame}{Reversibility}
+
+	A stationary Markov chain is \alert{reversible} if, run backwards in time, it has the same law.
+
+	\vfill
+	\pause
+
+	\begin{block}{Detailed balance}
+		\begin{equation*}
+			\pi_n\, Q_{nm} = \pi_m\, Q_{mn} \qquad\text{for all } n,m .
+		\end{equation*}
+	\end{block}
+
+	\vfill
+	\pause
+
+	\begin{myitem}
+		\item In equilibrium, the flow of probability from $n$ to $m$ equals the flow from $m$ to $n$, \alert{edge by edge}.
+		\item Stationarity, $\pi Q=0$, only asks that flows balance \alert{at each state}.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{Birth--death chains are reversible}
+
+	\begin{center}
+	\begin{tikzpicture}[->, >=stealth, node distance=1.9cm, every state/.style={minimum size=0.8cm, fill=azulcito!15!white, draw=azulcito, thick}]
+		\node[state] (0) {$0$};
+		\node[right of=0] (d1) {$\cdots$};
+		\node[state, right of=d1] (n) {$n$};
+		\node[state, right of=n, xshift=0.4cm] (n1) {\scriptsize $n{+}1$};
+		\node[right of=n1] (d2) {$\cdots$};
+		\node[state, right of=d2] (N) {$N$};
+		\path (n) edge[bend left] node[above] {\footnotesize $(N-n)\lambda$} (n1)
+		      (n1) edge[bend left] node[below] {\footnotesize $(n+1)\nu$} (n);
+		\draw[-, dashed, rojito, very thick] ($(n)!0.5!(n1)+(0,1.1)$) -- ($(n)!0.5!(n1)+(0,-1.1)$) node[below] {\footnotesize cut};
+	\end{tikzpicture}
+	\end{center}
+
+	\vfill
+	\pause
+
+	\begin{myitem}
+		\item In equilibrium, the flow across any cut must balance.
+		\item<3-> Only \alert{one edge} crosses the cut between $\{0,\ldots,n\}$ and $\{n+1,\ldots,N\}$, so
+		\begin{equation*}
+			\pi_n\,(N-n)\lambda = \pi_{n+1}\,(n+1)\nu .
+		\end{equation*}
+		\item<4-> That is detailed balance; solving it gives the binomial law.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{The space $\ell^2(\pi)$}
+
+	Inner product weighted by the stationary law, for complex vectors $u,v$:
+	\begin{equation*}
+		\brackets{u}{v}_\pi := \sum_n \pi_n\, u_n\, \bar v_n = v^*\,\Pi\,u, \qquad \Pi=\mathrm{diag}(\pi_n),\ \pi_n>0 .
+	\end{equation*}
+
+	\vfill
+	\pause
+
+	\begin{myitem}
+		\item A real matrix $A$ is \alert{self-adjoint} in $\ell^2(\pi)$ if $\brackets{Au}{v}_\pi = \brackets{u}{Av}_\pi$ for all $u,v$.
+		\item<3-> In matrix form: $v^*\Pi A u = v^* A^\top\Pi u$ for all $u,v$, that is,
+		\begin{equation*}
+			\Pi A = A^\top \Pi \qquad (\Pi A \text{ is symmetric}).
+		\end{equation*}
+		\item<4-> Example: any real diagonal matrix, such as $R$.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{Reversible generators are self-adjoint}
 
 	\begin{theorem}
-		Every eigenvalue $\theta$ of $\theta\,\phi R=\phi Q$ is real.
+		$Q$ is self-adjoint in $\ell^2(\pi)$ if and only if the chain is reversible.
 	\end{theorem}
 
 	\vfill
 	\pause
 
-	\begin{myitem}
-		\item $\phi$ is a \alert{row} vector, possibly complex; $R=\mathrm{diag}(r_n)$ is real and invertible.
-		\item<3-> Divide the eigenvector by the stationary law:
-		\begin{equation*}
-			h_n := \frac{\phi_n}{\pi_n}, \qquad\text{i.e.}\qquad \phi = h^\top\Pi, \quad \Pi=\mathrm{diag}(\pi_n),\ \pi_n>0 .
-		\end{equation*}
-		\item<4-> For $\theta=0$: $\phi=\pi$ and $h\equiv 1$.
-	\end{myitem}
-\end{frame}
-
-\begin{frame}{Step 1: from $\phi$ to $h$}
-
-	Two facts:
-	\begin{myitem}[0.6em]
-		\item $\Pi R = R\Pi$, since both are diagonal;
-		\item $\Pi Q = Q^\top\Pi$, i.e.\ $\pi_n Q_{nm} = \pi_m Q_{mn}$: this is \alert{detailed balance}.
-	\end{myitem}
+	Test on the basis vectors $e_n$, using $(Qe_m)_n = Q_{nm}$:
+	\begin{equation*}
+		\brackets{Qe_m}{e_n}_\pi = \pi_n\,Q_{nm}, \qquad \brackets{e_m}{Qe_n}_\pi = \pi_m\,Q_{mn} .
+	\end{equation*}
 
 	\vfill
 	\pause
 
-	Substitute $\phi=h^\top\Pi$ in $\theta\,\phi R=\phi Q$:
-	\begin{align*}
-		\theta\, h^\top \Pi R &= h^\top \Pi Q\\
-		\uncover<3->{\theta\, h^\top R\,\Pi &= h^\top Q^\top \Pi && \text{(the two facts)}\\}
-		\uncover<4->{\theta\,(Rh)^\top \Pi &= (Qh)^\top \Pi && \text{($R$ symmetric).}}
-	\end{align*}
+	\begin{myitem}
+		\item[$\Rightarrow$] Self-adjointness on basis vectors is exactly \alert{detailed balance}.
+		\item[$\Leftarrow$] Detailed balance gives equality on basis vectors, hence for all $u,v$ by linearity. \hfill $\square$
+	\end{myitem}
 
 	\vfill
-	\uncover<5->{
-	Cancel the invertible $\Pi$ and transpose:
-	\begin{equation*}
-		Q\,h = \theta\,R\,h .
-	\end{equation*}
+	\uncover<4->{
+	{\footnotesize In matrix form: detailed balance is $\Pi Q = Q^\top\Pi$.}
 	}
 \end{frame}
 
-\begin{frame}{Self-adjointness}
+\begin{frame}{The Dirichlet form}
 
-	Inner product weighted by the stationary law:
+	For a reversible generator, using that rows sum to $0$ and that $\pi_nQ_{nm}$ is symmetric:
 	\begin{equation*}
-		\brackets{u}{v}_\pi := \sum_n \pi_n\, u_n\, \bar v_n .
+		\brackets{Qh}{h}_\pi = -\frac12\sum_{m\neq n}\pi_n Q_{nm}\,|h_n-h_m|^2 \;\leq\; 0 .
 	\end{equation*}
 
 	\vfill
 	\pause
 
 	\begin{myitem}
-		\item $Q$ is self-adjoint, by detailed balance:
-		\begin{equation*}
-			\brackets{Qu}{v}_\pi = \sum_{n,m} \pi_n Q_{nm}\, u_m \bar v_n = \sum_{n,m} \pi_m Q_{mn}\, u_m \bar v_n = \brackets{u}{Qv}_\pi ,
-		\end{equation*}
-		using that $Q$ is real.
-		\item<3-> $R$ is real and diagonal, so it is self-adjoint too.
-		\item<4-> Hence $\brackets{Qh}{h}_\pi$ and $\brackets{Rh}{h}_\pi$ are \alert{real}, for every complex $h$.
+		\item Equality iff $h$ is \alert{constant} on each communicating class: for the irreducible Engset chain, iff $h$ is constant.
+		\item<3-> So $Q$ is a \alert{self-adjoint, negative semidefinite} operator on $\ell^2(\pi)$: its spectrum is real and $\leq 0$, with the constants as the only zero mode.
 	\end{myitem}
+
+	\vfill
+	\uncover<4->{
+	\begin{block}{}
+		\begin{center}
+		Our problem is not $Qh=\theta h$ but the \alert{generalised} problem $\theta\,R\phi = Q^\top\phi$.
+		\end{center}
+	\end{block}
+	}
+\end{frame}
+
+\begin{frame}{All the eigenvalues are real}
+
+	\begin{theorem}
+		Every eigenvalue $\theta$ of $\theta\,R\,\phi = Q^\top\phi$ is real.
+	\end{theorem}
+
+	\vfill
+	\pause
+
+	\alert{Step 1.} Divide the eigenvector by the stationary law: $h_n := \phi_n/\pi_n$, i.e.\ $\phi = \Pi h$.
+	\begin{align*}
+		\uncover<3->{\theta\,R\,\Pi h &= Q^\top \Pi h\\}
+		\uncover<4->{\theta\,\Pi R\, h &= \Pi Q\, h && \text{($\Pi R=R\Pi$, diagonal; $Q^\top\Pi = \Pi Q$, detailed balance)}\\}
+		\uncover<5->{\theta\,R\,h &= Q\,h && \text{(cancel the invertible $\Pi$).}}
+	\end{align*}
+
+	\vfill
+	\uncover<6->{
+	{\footnotesize For $\theta=0$: $\phi=\pi$ and $h\equiv 1$.}
+	}
 \end{frame}
 
 \begin{frame}{All the eigenvalues are real: proof}
 
-	Let $Qh=\theta Rh$, $h\neq 0$.
+	Let $Qh=\theta Rh$, with $h\neq 0$ possibly complex.
 
 	\vfill
 
 	\begin{myitem}
 		\item \alert{Step 2.} Take the inner product with $h$:
 		\begin{equation*}
-			\brackets{Qh}{h}_\pi = \theta\,\brackets{Rh}{h}_\pi, \qquad\text{both brackets real.}
+			\brackets{Qh}{h}_\pi = \theta\,\brackets{Rh}{h}_\pi .
 		\end{equation*}
-		\item<2-> \alert{Step 3.} $Q$ is a generator (rows sum to $0$) and $\pi_nQ_{nm}$ is symmetric, so
-		\begin{equation*}
-			\brackets{Qh}{h}_\pi = -\frac12\sum_{m\neq n}\pi_n Q_{nm}\,|h_n-h_m|^2\leq 0,
-		\end{equation*}
-		with equality iff $h$ is constant ($Q$ irreducible).
+		Both brackets are \alert{real}, since $Q$ and $R$ are self-adjoint.
+		\item<2-> \alert{Step 3.} If $\brackets{Rh}{h}_\pi\neq 0$: $\quad\theta = \dfrac{\brackets{Qh}{h}_\pi}{\brackets{Rh}{h}_\pi}\in\R$.
+		\item<3-> \alert{Step 4.} If $\brackets{Rh}{h}_\pi= 0$: then $\brackets{Qh}{h}_\pi=0$, so by the Dirichlet form $h$ is constant and $Qh=0$. Thus $\theta\,Rh=0$ with $Rh\neq0$ ($R$ invertible), so $\theta=0$. \hfill $\square$
 	\end{myitem}
 \end{frame}
 
-\begin{frame}{All the eigenvalues are real: end of proof}
+\begin{frame}{Why the Dirichlet form is needed}
 
 	\begin{myitem}
-		\item \alert{Step 4.} If $\brackets{Rh}{h}_\pi\neq 0$:
+		\item $R$ is \alert{indefinite}, so $\brackets{Rh}{h}_\pi$ can vanish for $h\neq 0$.
+		\item<2-> Self-adjointness of $Q$ and $R$ alone does not give a real spectrum:
 		\begin{equation*}
-			\theta = \frac{\brackets{Qh}{h}_\pi}{\brackets{Rh}{h}_\pi}\in\R .
+			\begin{pmatrix}0&1\\1&0\end{pmatrix} h = \theta \begin{pmatrix}1&0\\0&-1\end{pmatrix} h \quad\Longrightarrow\quad \theta=\pm i .
 		\end{equation*}
-		\item<2-> If $\brackets{Rh}{h}_\pi= 0$: then $\brackets{Qh}{h}_\pi=0$, so $h$ is constant and $Qh=0$.\\
-		Thus $\theta\,Rh=0$ with $Rh\neq0$ ($R$ invertible), so $\theta=0$. \hfill $\square$
+		\item<3-> What saves us is the \alert{sign} of $\brackets{Qh}{h}_\pi$: a generator, not just a symmetric matrix.
 	\end{myitem}
 
 	\vfill
-	\uncover<3->{
-	\begin{block}{}
-		Step 3 is needed because $R$ is \alert{indefinite}: self-adjointness alone allows $\brackets{Rh}{h}_\pi=0$.
-	\end{block}
+	\uncover<4->{
 	{\footnotesize Reality is proved by other routes in \cite{AMS1982} (an explicit discriminant) and \cite{Mitra1988} (a Schur complement and Sylvester's law of inertia).}
 	}
 \end{frame}
@@ -855,122 +908,63 @@
 \section{Existence, uniqueness and positivity}
 %=====================================================================
 
-\begin{frame}{What the spectral solution does not tell us}
+\begin{frame}{Real spectrum and positivity}
 
 	\begin{myitem}
-		\item Equal numbers of conditions and unknowns do not make the linear system \alert{non-singular}.
-		\item Nor do they make the resulting measure \alert{non-negative}: exponents of both signs, coefficients of both signs.
-		\item For the classical finite buffer, \cite{Mitra1988} does not prove either.
+		\item Each density $f_n(x)=\sum_k a_k\,\phi_{k,n}\,e^{\theta_k x}$ is a sum of $N+1$ \alert{real} exponentials.
+		\item<2-> A real spectrum \alert{helps}: no oscillating modes, and such a sum has at most $N$ zeros.
+		\item<3-> But it does \alert{not guarantee} positivity: exponents of both signs, coefficients of both signs, fixed by the boundary conditions.
+		\item<4-> Nor does counting conditions guarantee a \alert{non-singular} system: for the classical finite buffer, \cite{Mitra1988} proves neither.
 	\end{myitem}
-
-	\vfill
-	\pause
-
-	\begin{block}{}
-		\begin{center}
-		We use a \alert{probabilistic} route instead of the linear algebra.
-		\end{center}
-	\end{block}
 \end{frame}
 
-\begin{frame}{Existence and uniqueness}
+\begin{frame}{Existence, uniqueness and positivity}
 
 	\begin{theorem}
 		For $0<p<Nc$, $p/c\notin\mathbb Z$, the process has a \alert{unique} stationary distribution.\\
 		Its densities are positive on $(0,B)$ and its atoms are positive.
 	\end{theorem}
+
+	\vfill
+	\pause
+
+	{\footnotesize Idea: only two atoms feed the interior, and positive boundary data give a positive interior. Flow conservation gives a positive left eigenvector of the resulting $2\times2$ transfer matrix, and Perron--Frobenius does the rest.}
 \end{frame}
 
-\begin{frame}{The gateways}
+\begin{frame}{The solution: over-provisioned}
 
 	\begin{columns}
 		\begin{column}{0.5\textwidth}
-			\begin{myitem}
-				\item Only two atoms \alert{leak into the interior}:
-				\begin{equation*}
-					u = \pi^0_{\ns+1}, \qquad v=\pi^B_{\ns}.
-				\end{equation*}
-				\item<2-> Given $(u,v)$, the interior and all other atoms are determined.
-			\end{myitem}
+			\input{figuras/stat_over_x.tex}
 		\end{column}
 		\begin{column}{0.5\textwidth}
-			\begin{center}
-			\begin{tikzpicture}[scale=0.75]
-				\foreach \y in {0,1,2,3,4}{ \draw[gray!60] (0,\y) -- (5,\y); }
-				\draw[dashed] (0,-0.4) node[below] {$0$} -- (0,4.4);
-				\draw[dashed] (5,-0.4) node[below] {$B$} -- (5,4.4);
-				\node[anchor=east] at (-1.1,2) {\footnotesize $\ns$};
-				\node[anchor=east] at (-1.1,3) {\footnotesize $\ns{+}1$};
-				% atoms
-				\foreach \y in {0,1,2}{ \node[verdecito!80!black, fill=verdecito!80!black, circle, minimum size=.16cm, inner sep=0pt] at (5,\y) {}; }
-				\foreach \y in {3,4}{ \node[rojito, fill=rojito, circle, minimum size=.16cm, inner sep=0pt] at (0,\y) {}; }
-				% gateways
-				\node[draw, very thick, azulcito, circle, minimum size=.42cm] at (5,2) {};
-				\node[draw, very thick, azulcito, circle, minimum size=.42cm] at (0,3) {};
-				\node[azulcito] at (5.45,1.65) {$v$};
-				\node[azulcito] at (-0.45,3.35) {$u$};
-				\draw[->, very thick, azulcito, dashed] (5.25,2.2) to[bend right=40] node[right] {\scriptsize $(N{-}\ns)\lambda$} (5.25,2.8);
-				\draw[->, very thick, azulcito] (4.75,3) -- (3.2,3);
-				\draw[->, very thick, azulcito, dashed] (-0.25,2.8) to[bend right=40] node[left] {\scriptsize $\mu p$} (-0.25,2.2);
-				\draw[->, very thick, azulcito] (0.25,2) -- (1.8,2);
-			\end{tikzpicture}
-			\end{center}
+			\input{figuras/stat_over_n.tex}
 		\end{column}
 	\end{columns}
-\end{frame}
-
-\begin{frame}{Proof, part 1: positive boundary data, positive interior}
-
-	\begin{myitem}
-		\item Fix gateway data $(u,v)\geq 0$, not both zero.
-		\item<2-> Solve the interior system $\mathbf{f}'R=\mathbf{f}Q$, with each mode's condition at its \alert{inflow} end.
-		\item<3-> The solution is \alert{positive} on $(0,B)$: a \alert{maximum principle}, which again rests on \alert{reversibility}.
-	\end{myitem}
 
 	\vfill
-	\uncover<4->{
-	\begin{block}{}
-		\begin{center}
-		Positive boundary data $\Rightarrow$ positive interior.\\
-		It remains to find the boundary data.
-		\end{center}
-	\end{block}
-	}
+	\begin{myitem}[0.5em]
+		\item The quota is often \alert{full}, rarely empty; the fleet is close to its binomial law.
+	\end{myitem}
+	{\footnotesize $N=20$, $\lambda=1$, $\nu=3$, $c=1$ (mean burn $5$), refill $p=5.6$, $B=4$. Left: distribution function of $x$; its jumps are the atoms.}
 \end{frame}
 
-\begin{frame}{Proof, part 2: the gateways}
+\begin{frame}{The solution: under-provisioned}
 
-	\begin{myitem}
-		\item Feeding the interior back to the boundaries: $(u',v') = T(u,v)$, with $T$ a $2\times 2$ matrix, \alert{$T>0$} by part 1.
-		\item A stationary law needs a fixed point: $T(u,v)=(u,v)$.
-		\item<2-> \alert{Flow conservation}: what leaves the boundaries through the gateways comes back. Testing the balance equations with $\psi\equiv 1$:
-		\begin{equation*}
-			w^\top T = w^\top, \qquad w = \big(\mu p,\ (N-\ns)\lambda\big) > 0 .
-		\end{equation*}
-		\item<3-> \alert{Perron--Frobenius}: a positive left eigenvector with eigenvalue $1$ makes $1$ the spectral radius of $T$, \alert{simple}, with a \alert{positive} right eigenvector $(u,v)$, unique up to scale.
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\input{figuras/stat_under_x.tex}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\input{figuras/stat_under_n.tex}
+		\end{column}
+	\end{columns}
+
+	\vfill
+	\begin{myitem}[0.5em]
+		\item The quota is \alert{empty} more than half the time, and the fleet \alert{piles up} above $N\rho$.
 	\end{myitem}
-\end{frame}
-
-\begin{frame}{Proof, part 2: the other atoms}
-
-	\begin{myitem}
-		\item With the gateways known, the remaining atoms solve a \alert{birth--death recursion} on each side:
-		\begin{itemize}
-			\item at $x=B$, on $\{0,\ldots,\ns\}$, starting from $v$;
-			\item at $x=0$, on $\{\ns+1,\ldots,N\}$, starting from $u$.
-		\end{itemize}
-		\item<2-> The inputs from the interior are positive, so \alert{every atom is positive}.
-		\item<3-> Normalise. Uniqueness comes from the simplicity of the Perron eigenvalue. \hfill $\square$
-	\end{myitem}
-\end{frame}
-
-\begin{frame}{Work in progress: feedback fluid queues}
-
-	\begin{myitem}
-		\item We are exploring the connection with \alert{feedback fluid queues} \cite{MMS2003}, where the sources' rates depend on the buffer.
-		\item<2-> There, excursions away from the empty buffer are \alert{unaffected} by the feedback.
-		\item<3-> If this carries over, the whole effect of the throttle reduces to \alert{one number}: the mass at the empty bucket.
-	\end{myitem}
+	{\footnotesize Same parameters, refill $p=4.4$. Why the fleet piles up: the fluid limit.}
 \end{frame}
 
 %=====================================================================
@@ -1032,6 +1026,48 @@
 	\end{myitem}
 \end{frame}
 
+\begin{frame}{Explicit solutions}
+
+	A piecewise-smooth system: explicit on each piece, glued at the hitting times.
+
+	\begin{myitem}
+		\item \alert{Interior}, from $(\bar n_0,\bar x_0)$:
+		\begin{equation*}
+			\bar n(t) = \rho + (\bar n_0-\rho)\,e^{-\gamma t}, \qquad
+			\bar x(t) = \bar x_0 + (\bar p - c\rho)\,t - \frac{c}{\gamma}(\bar n_0-\rho)\big(1-e^{-\gamma t}\big),
+		\end{equation*}
+		until $\bar x$ hits $0$ or $\bar b$.
+		\item<2-> \alert{Full bucket}: $\bar x=\bar b$, and $\bar n$ as above, until $c\bar n$ rises above $\bar p$.
+		\item<3-> \alert{Empty bucket}: $\bar x=0$, and $\bar n$ relaxes at rate $\lambda$,
+		\begin{equation*}
+			\bar n(t) = \bar n_T + (\bar n_0-\bar n_T)\,e^{-\lambda t}, \qquad \bar n_T = 1-\frac{\mu\,\bar p}{\lambda},
+		\end{equation*}
+		until $c\bar n$ drops below $\bar p$.
+	\end{myitem}
+\end{frame}
+
+\begin{frame}{The empty bucket: sliding, not projecting}
+
+	\begin{myitem}
+		\item On the empty bucket the interior field points \alert{outward}: $\dot{\bar x} = \bar p - c\bar n < 0$.
+		\item<2-> \alert{Projecting} it onto the boundary, as for a reflected ODE, would keep $\dot{\bar n} = \lambda - \gamma\bar n$, with equilibrium $\rho$.
+		\item<3-> The throttle changes the $\bar n$ equation too:
+		\begin{equation*}
+			\dot{\bar n} = \lambda(1-\bar n) - \mu\bar p = \underbrace{\lambda-\gamma\bar n}_{\text{projection}} + \underbrace{\mu\,(c\bar n - \bar p)}_{>0} .
+		\end{equation*}
+		\item<4-> The extra term is the work that \alert{cannot be completed}: tasks stall, agents stay active.
+	\end{myitem}
+
+	\vfill
+	\uncover<5->{
+	\begin{block}{}
+		\begin{center}
+		The boundary dynamics come from the \alert{model}, not from the constraint.
+		\end{center}
+	\end{block}
+	}
+\end{frame}
+
 \begin{frame}{Convergence}{Work in progress}
 
 	\begin{myitem}
@@ -1046,6 +1082,16 @@
 		No formal proof yet; it should follow from standard arguments for density-dependent processes in the Kurtz setting.
 	\end{block}
 	}
+\end{frame}
+
+\begin{frame}{The ODE as a law of large numbers}
+
+	\begin{center}
+		\input{figuras/fluid_lln.tex}
+	\end{center}
+
+	\vfill
+	{\footnotesize Under-provisioned plan, $\bar p=0.1723$, $\bar b=0.2$, from $(\bar n_0,\bar x_0)=(0.05,0.15)$; $\lambda=1$, $\nu=3$, $c=1$. One PDMP path for each $N$ (solid) against the fluid solution (dashed). Fluctuations are of order $1/\sqrt N$.}
 \end{frame}
 
 \begin{frame}{Phase portrait: over-provisioned}
@@ -1123,161 +1169,36 @@
 	\begin{block}{}
 		\begin{center}
 		At the fluid scale the quota does not matter, and the balanced plan is \alert{degenerate}.\\
-		The fluctuations decide: zoom in by $\sqrt N$.
+		The fluctuations decide.
 		\end{center}
 	\end{block}
 	}
 \end{frame}
 
 %=====================================================================
-\section{Square-root provisioning}
+\section{Ongoing work}
 %=====================================================================
 
-\begin{frame}{How should the plan scale with the fleet?}
-
-	\begin{myitem}
-		\item The mean burn $c\nb$ grows like $N$.
-		\item The fleet fluctuates around $\nb$ by $\sN := \sqrt{N\rho(1-\rho)}$, which grows like $\sqrt N$.
-	\end{myitem}
-
-	\vfill
-	\pause
-
-	\begin{block}{}
-		\begin{center}
-		Is a refill margin of order $\sqrt N$ above the mean enough,\\
-		with a quota that is also of order $\sqrt N$?
-		\end{center}
-	\end{block}
-\end{frame}
-
-\begin{frame}{Diffusion scaling}{Work in progress}
-
-	Set the refill and the quota on the scale of the fluctuations:
-	\begin{equation*}
-		p = c\nb + \beta\,c\,\sN, \qquad B = b\,c\,\sN .
-	\end{equation*}
-
-	\vfill
-	\pause
-
-	Scale the fleet and the \alert{tokens left}:
-	\begin{equation*}
-		\xi = \frac{n-\nb}{\sN}, \qquad \hat x = \frac{x}{c\,\sN}\in[0,b].
-	\end{equation*}
-
-	\vfill
-	\pause
-
-	\begin{myitem}[0.8em]
-		\item Inside $(0,B)$, \alert{exactly}: $\quad \dfrac{d\hat x}{dt} = \beta - \xi$.
-		\item The fleet alone obeys a CLT: $\xi \Rightarrow$ Ornstein--Uhlenbeck, $\ d\xi = -\gamma\,\xi\,dt + \sqrt{2\gamma}\,dW$.
-	\end{myitem}
-\end{frame}
-
-\begin{frame}{The candidate limit}{Work in progress}
-
-	A two-dimensional process $(\hat x,\xi)$ on $[0,b]\times\R$:
-
-	\vfill
-
-	\begin{myitem}
-		\item \alert{Interior}: $\quad d\hat x = (\beta-\xi)\,dt, \qquad d\xi = -\gamma\,\xi\,dt + \sqrt{2\gamma}\,dW$.
-		\item<2-> \alert{Full bucket}, $\hat x=b$: held there while $\xi<\beta$; the fleet is unaffected.
-		\item<3-> \alert{Empty bucket}, $\hat x=0$: held there while $\xi>\beta$, and the fleet is \alert{throttled}:
-		\begin{equation*}
-			d\xi = -(\lambda\,\xi + \nu\,\beta)\,dt + \sqrt{2\gamma}\,dW .
-		\end{equation*}
-	\end{myitem}
-
-	\vfill
-	\uncover<4->{
-	{\footnotesize Derived formally from the generator; convergence is not yet proved.}
-	}
-\end{frame}
-
-\begin{frame}{Reading the limit}
-
-	\begin{myitem}
-		\item The quota \alert{integrates} an Ornstein--Uhlenbeck process: it is not itself a reflected diffusion.
-		\item At the empty bucket the throttle \alert{switches} the drift of the fleet.
-		\item<2-> The fleet size \alert{disappears}. What remains:
-		\begin{itemize}
-			\item the refill margin $\beta$;
-			\item the quota $b$, in units of $c\,\sN$;
-			\item the agents' own rates $\lambda,\nu$.
-		\end{itemize}
-	\end{myitem}
-\end{frame}
-
-\begin{frame}{If the limit is right}{Work in progress}
-
-	Let $P(\beta,b)$ be the fraction of time the \alert{limit process} spends at the empty bucket $\hat x=0$. Then
-	\begin{equation*}
-		P_{\rm thr} \;\longrightarrow\; P(\beta,b)\in(0,1), \qquad N\to\infty .
-	\end{equation*}
-
-	\vfill
-	\pause
-
-	\begin{myitem}
-		\item Throttling stays at a \alert{positive} level, set by the margin $\beta$ and the quota $b$, and \alert{not} by $N$.
-		\item<3-> The quota is \alert{always} of order $\sqrt N$: $B=b\,c\,\sN$.
-		\item<4-> Relative to the mean burn, both the margin and the quota \alert{vanish} like $1/\sqrt N$.
-	\end{myitem}
-\end{frame}
-
-\begin{frame}{Square-root staffing, for tokens}
-
-	\begin{center}
-	\small
-	\renewcommand{\arraystretch}{1.4}
-	\begin{tabular}{l|l|l}
-		& \alert{many servers} \cite{HalfinWhitt1981} & \alert{agent fleet}\\\hline
-		mean demand & offered load $R$ & mean burn $c\nb$\\
-		fluctuations & $\sqrt R$ & $c\,\sN \propto \sqrt N$\\
-		provisioning & $s = R + \beta\sqrt R$ servers & $p = c\nb + \beta\,c\,\sN$ refill\\
-		buffer & --- & quota $B = b\,c\,\sN$\\
-		limit & $P(\text{wait}) \to \alpha(\beta)\in(0,1)$ & $P_{\rm thr} \to P(\beta,b)\in(0,1)$
-	\end{tabular}
-	\end{center}
-
-	\vfill
-	\pause
-
-	\begin{myitem}
-		\item The same \alert{quality-and-efficiency-driven} regime: congestion neither vanishes nor dominates.
-		\item<3-> New here: a second knob, the \alert{quota}, also on the $\sqrt N$ scale.
-	\end{myitem}
-\end{frame}
-
-\begin{frame}{The scaling, numerically}
+\begin{frame}{Ongoing work: a quota of order $\sqrt N$}
 
 	\begin{columns}
-		\begin{column}{0.58\textwidth}
-			\input{figuras/throttle_scaling.tex}
-		\end{column}
-		\begin{column}{0.42\textwidth}
-			\begin{myitem}
-				\item Margin fixed at $\beta=1$; quota in units of $c\,\sN$.
-				\item As $N$ grows from $10$ to $640$, the curves \alert{settle}: throttling depends on $b$, not on $N$.
+		\begin{column}{0.45\textwidth}
+			\begin{myitem}[0.9em]
+				\item Refill a margin above the mean burn, on the scale of the fleet fluctuations:
+				\begin{gather*}
+					p = cN\rho + \beta\,c\,\sN,\\
+					\sN = \sqrt{N\rho(1-\rho)} .
+				\end{gather*}
+				\item<2-> \alert{Claim:} a quota of order $\sqrt N$, $B = b\,c\,\sN$, keeps throttling at a \alert{fixed positive level}, as in square-root staffing \cite{HalfinWhitt1981}.
+				\item<3-> Under study: the diffusion limit.
 			\end{myitem}
-			\vfill
-			{\footnotesize Balance equations on a grid in $x$, checked against simulation. $\lambda=1$, $\nu=3$, $c=1$.}
+		\end{column}
+		\begin{column}{0.55\textwidth}
+			\input{figuras/throttle_scaling.tex}
+
+			{\footnotesize $\beta=1$. As $N$ grows, throttling depends on $b$, not on $N$.}
 		\end{column}
 	\end{columns}
-\end{frame}
-
-\begin{frame}{The message}
-
-	\vfill
-	\begin{block}{}
-		\begin{center}
-		\large Overprovision the refill by order $\sqrt N$ above the mean burn,\\[0.3em]
-		and a quota of order $\sqrt N$ suffices.
-		\end{center}
-	\end{block}
-	\vfill
 \end{frame}
 
 %=====================================================================
@@ -1289,10 +1210,10 @@
 	\begin{myitem}[1.1em]
 		\item A token quota shared by a fleet of agents is a \alert{flow-level token bucket}: a PDMP with state (active agents, tokens left).
 		\item The \alert{empty bucket throttles} the fleet: a feedback fluid queue.
-		\item Real spectrum from \alert{reversibility}.
-		\item Existence, uniqueness and positivity from a \alert{$2\times2$ Perron--Frobenius} argument.
-		\item \alert{Fluid limit}: full or empty; under-provisioning piles up the fleet above $\rho$.
-		\item \alert{Square-root provisioning} (work in progress): a refill margin of order $\sqrt N$ above the mean burn, and a quota of order $\sqrt N$ suffices.
+		\item Stationary equations $R\,\mathbf f'=Q^\top\mathbf f$: a \alert{real} spectrum, because reversible generators are self-adjoint in $\ell^2(\pi)$.
+		\item The stationary law exists, is unique and positive.
+		\item \alert{Fluid limit}: a piecewise-smooth ODE; full or empty, and under-provisioning piles up the fleet above $\rho$.
+		\item Ongoing: a quota of order $\sqrt N$ should suffice.
 	\end{myitem}
 \end{frame}
 
@@ -1303,7 +1224,7 @@
 		\item \alert{Heavy-tailed} token demands: tasks are far from exponential.
 		\item \alert{Heterogeneous} agents, with different burn rates.
 		\item \alert{Congestion}: crowded fleets may become less efficient, and burn more tokens per task.
-		\item A proof of the \alert{diffusion limit}, and of the throttle decomposition.
+		\item Proofs of the \alert{fluid} and \alert{diffusion} limits.
 	\end{myitem}
 \end{frame}
 
