@@ -604,8 +604,8 @@
 		\draw[dashed] (5,-0.3) node[below] {$B$} -- (5,4.5);
 		\draw[dotted, gray] (-0.1,2.5) -- (5.1,2.5);
 		\node[font=\scriptsize, gray, anchor=west] at (5.15,2.5) {$\ns=2$};
-		\foreach \y/\r in {0/3.2pt, 1/2.6pt, 2/2.0pt}{ \fill[verdecito!80!black] (5,\y) circle (\r); }
-		\foreach \y/\r in {3/2.8pt, 4/2.0pt}{ \fill[rojito] (0,\y) circle (\r); }
+		\foreach \y in {0,1,2}{ \fill[verdecito!80!black] (5,\y) circle (2.6pt); }
+		\foreach \y in {3,4}{ \fill[rojito] (0,\y) circle (2.6pt); }
 		\node[font=\scriptsize, azulcito, anchor=south] at (2.5,4.45) {densities $f_n(x)$};
 		\node[font=\scriptsize, verdecito!60!black, anchor=north] at (5,-0.75) {atoms $\pi^B_n$};
 		\node[font=\scriptsize, rojito, anchor=north] at (0,-0.75) {atoms $\pi^0_n$};
@@ -689,7 +689,7 @@
 		\draw[dashed] (5,-0.3) node[below] {$B$} -- (5,4.5);
 		\draw[dotted, gray] (-0.1,2.5) -- (5.1,2.5);
 		\node[font=\scriptsize, gray, anchor=east] at (-0.25,2.5) {$\ns=2$};
-		\foreach \y/\r in {0/3.2pt, 1/2.6pt, 2/2.0pt}{ \fill[verdecito!80!black] (5,\y) circle (\r); }
+		\foreach \y in {0,1,2}{ \fill[verdecito!80!black] (5,\y) circle (2.6pt); }
 		\foreach \y in {0,1,2}{ \draw[->, very thick, verdecito!80!black] (3.7,\y+0.15) -- (4.75,\y+0.15); }
 		\draw[<->, thick, verdecito!60!black] (5.3,0.1) -- (5.3,0.9);
 		\draw[<->, thick, verdecito!60!black] (5.3,1.1) -- (5.3,1.9);
@@ -734,7 +734,7 @@
 		\draw[dashed] (5,-0.3) node[below] {$B$} -- (5,4.5);
 		\draw[dotted, gray] (-0.1,2.5) -- (5.1,2.5);
 		\node[font=\scriptsize, gray, anchor=west] at (5.25,2.5) {$\ns=2$};
-		\foreach \y/\r in {3/2.8pt, 4/2.0pt}{ \fill[rojito] (0,\y) circle (\r); }
+		\foreach \y in {3,4}{ \fill[rojito] (0,\y) circle (2.6pt); }
 		\foreach \y in {3,4}{ \draw[->, very thick, rojito] (1.3,\y+0.15) -- (0.25,\y+0.15); }
 		\draw[<->, thick, rojito] (-0.3,3.1) -- (-0.3,3.9);
 		\node[font=\scriptsize, rojito, anchor=east] at (-0.35,3.5) {throttled};
