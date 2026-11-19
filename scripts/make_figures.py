@@ -26,11 +26,12 @@ OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "figuras")
 # Event-driven simulation of the PDMP
 # ---------------------------------------------------------------------------
 @njit(cache=True)
-def simulate(N, lam, nu, c, p, B, T, throttle, nbins, seed, record):
+def simulate(N, lam, nu, c, p, B, T, throttle, nbins, seed, record, n0=-1, x0=-1.0):
+    # default start: n = round(N rho), x = B/2
     np.random.seed(seed)
     gam = lam + nu
-    n = int(round(N * lam / gam))
-    x = B / 2.0
+    n = int(round(N * lam / gam)) if n0 < 0 else n0
+    x = B / 2.0 if x0 < 0 else x0
     t = 0.0
     t_zero = 0.0      # time throttled (x=0, drift<0)
     t_full = 0.0      # time at x=B
@@ -141,12 +142,12 @@ def dominant_rate(N, lam, nu, c, p):
 # Figure 1: sample path
 # ---------------------------------------------------------------------------
 def fig_sample_path():
-    # parameters chosen so that the quota spends most of its time in the interior
     # (seed picked so that the run visits both boundaries)
     N, lam, nu, c = 50, 1.0, 3.0, 1.0
     p, B = 12.9, 10.0
     Tmax = 30.0
-    *_, rt, rn, rx = simulate(N, lam, nu, c, p, B, Tmax, True, 10, 136, True)
+    # start with no active agents and a full bucket, so the transient is visible
+    *_, rt, rn, rx = simulate(N, lam, nu, c, p, B, Tmax, True, 10, 136, True, 0, B)
     sel = rt <= Tmax
     rt, rn, rx = rt[sel], rn[sel], rx[sel]
     ncoords = " ".join(f"({a:.4f},{b:.0f})" for a, b in zip(rt, rn))
