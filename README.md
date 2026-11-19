@@ -35,4 +35,4 @@ Run all with `python3 make_figures.py`, or one with `python3 make_figures.py pat
 
 Seminario ML+DE, Fondo Ida Holz, November 2026. `scripts/seminar_figures.py` writes
 `figuras/stat_{over,under}_{x,n}.tex` (stationary solution for two plans, from the balance
-equations on a grid) and `figuras/fluid_lln.tex` (PDMP paths for N = 20, 200, 2000 against the fluid ODE).
+equations on a grid) and `figuras/fluid_lln.tex`, `figuras/fluid_lln_over.tex` (PDMP paths for N = 20, 200, 2000 against the fluid ODE, under- and over-provisioned).

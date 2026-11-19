@@ -168,12 +168,11 @@
 	\end{block}
 
 	\vfill
-	\pause
 
 	\begin{myitem}
 		\item Buying too little: agents are \alert{throttled} and tasks stall.
 		\item Buying too much: the quota sits full and the refill is \alert{wasted}.
-		\item<3-> How do both answers \alert{scale} with the size of the fleet?
+		\item How do both answers \alert{scale} with the size of the fleet?
 	\end{myitem}
 \end{frame}
 
@@ -182,7 +181,6 @@
 	A provider wants to cap each client's \alert{long-run} usage, while still allowing \alert{bursts}.
 
 	\vfill
-	\pause
 
 	The standard mechanism gives the client \alert{credits}:
 	\begin{myitem}[0.7em]
@@ -192,7 +190,6 @@
 	\end{myitem}
 
 	\vfill
-	\pause
 
 	{\small Examples: LLM APIs (tokens per minute), cloud burst credits, network traffic.}
 
@@ -212,9 +209,9 @@
 		\begin{column}{0.46\textwidth}
 			\begin{myitem}[0.6em]
 				\item Tokens drip into a bucket at rate $p$, up to a depth $B$.
-				\item<2-> Traffic leaves only by \alert{spending tokens}: bursts up to $B$ pass at once, the long-run rate is $p$.
-				\item<3-> Empty: traffic waits (\alert{shaping}) or is dropped (\alert{policing}).
-				\item<3-> Full: new tokens are discarded.
+				\item Traffic leaves only by \alert{spending tokens}: bursts up to $B$ pass at once, the long-run rate is $p$.
+				\item Empty: traffic waits (\alert{shaping}) or is dropped (\alert{policing}).
+				\item Full: new tokens are discarded.
 			\end{myitem}
 		\end{column}
 		\begin{column}{0.54\textwidth}
@@ -228,7 +225,7 @@
 				\foreach \i in {0,1,2}{ \foreach \j in {0,1}{
 					\fill[verdecito!70!white] (3.25+0.35*\i,1.45+0.32*\j) circle (0.12);
 				}}
-				\draw<3->[->, thick, gray] (4.3,2.9) -- (4.9,3.35) node[above] {discarded};
+				\draw[->, thick, gray] (4.3,2.9) -- (4.9,3.35) node[above] {discarded};
 				% gate
 				\node[draw, thick, rounded corners, fill=azulcito!15!white, minimum width=1.0cm, minimum height=0.6cm] (gate) at (3.6,0) {gate};
 				\draw[->, thick, verdecito!80!black] (3.6,1.15) -- node[right] {spend} (gate.north);
@@ -247,27 +244,27 @@
 	\end{columns}
 
 	\vfill
-	\uncover<4->{
+	
 	{\footnotesize Introduced to shape network traffic \cite{Turner1986}; today it is the standard rate limiter of APIs and cloud services, LLM token quotas included.}
-	}
+	
 \end{frame}
 
 \begin{frame}{Token buckets in the fluid-queue literature}
 
 	\begin{myitem}
 		\item The token level is a \alert{fluid buffer}: filled at rate $p$, drained by the traffic.
-		\item<2-> Buffers fed by Markov-modulated on--off sources have been modelled before, with spectral methods: \cite{Kosten1974}, \cite{AMS1982}, \cite{Mitra1988}, and token buckets in \cite{ElwalidMitra1991}.
-		\item<3-> Sources whose rates depend on the buffer: \alert{feedback fluid queues} \cite{MMS2003}.
+		\item Buffers fed by Markov-modulated on--off sources have been modelled before, with spectral methods: \cite{Kosten1974}, \cite{AMS1982}, \cite{Mitra1988}, and token buckets in \cite{ElwalidMitra1991}.
+		\item Sources whose rates depend on the buffer: \alert{feedback fluid queues} \cite{MMS2003}.
 	\end{myitem}
 
 	\vfill
-	\uncover<4->{
+	\pause
 	\begin{block}{}
 		\begin{center}
 		An \alert{old fluid queue}, in a \alert{new setting}: AI agents sharing a token quota.
 		\end{center}
 	\end{block}
-	}
+	
 \end{frame}
 
 \begin{frame}{The new setting}
@@ -443,15 +440,15 @@
 			\item $n\leq \ns$: the quota \alert{fills};
 			\item $n> \ns$: the quota \alert{drains}.
 		\end{itemize}
-		\item<2-> Standing assumptions: $0<p<Nc$, and $p/c\notin\mathbb{Z}$, so that no mode has zero drift.
+		\item Standing assumptions: $0<p<Nc$, and $p/c\notin\mathbb{Z}$, so that no mode has zero drift.
 	\end{myitem}
 
 	\vfill
-	\uncover<3->{
+	\pause
 	\begin{block}{Mean drift $p - c\nb$}
 		The plan is \alert{over-provisioned} if $p>c\nb$, \alert{under-provisioned} if $p<c\nb$.
 	\end{block}
-	}
+	
 \end{frame}
 
 \begin{frame}{State space and dynamics}
@@ -479,14 +476,14 @@
 		\foreach \y in {3,4}{ \fill[pattern=north west lines] (0,\y-0.2) rectangle ++(-.2,.4); }
 		% path
 		\node[azulcito, fill=azulcito, circle, minimum size=.18cm, inner sep=0pt] at (1,1) {};
-		\draw<2->[very thick,azulcito,->] (1,1) -- (2.0,1);
-		\draw<3->[very thick,azulcito,dashed,->] (2.0,1) -- (2.0,2);
-		\draw<3->[very thick,azulcito,->] (2.0,2) -- (2.9,2);
-		\draw<4->[very thick,azulcito,dashed,->] (2.9,2) -- (2.9,3);
-		\draw<4->[very thick,azulcito,->] (2.9,3) -- (2.5,3);
-		\draw<4->[very thick,azulcito,dashed,->] (2.5,3) -- (2.5,4);
-		\draw<4->[very thick,azulcito,->] (2.5,4) -- (0.05,4);
-		\node<5->[rojito, fill=rojito, circle, minimum size=.22cm, inner sep=0pt] at (0,4) {};
+		\draw[very thick,azulcito,->] (1,1) -- (2.0,1);
+		\draw[very thick,azulcito,dashed,->] (2.0,1) -- (2.0,2);
+		\draw[very thick,azulcito,->] (2.0,2) -- (2.9,2);
+		\draw[very thick,azulcito,dashed,->] (2.9,2) -- (2.9,3);
+		\draw[very thick,azulcito,->] (2.9,3) -- (2.5,3);
+		\draw[very thick,azulcito,dashed,->] (2.5,3) -- (2.5,4);
+		\draw[very thick,azulcito,->] (2.5,4) -- (0.05,4);
+		\node[rojito, fill=rojito, circle, minimum size=.22cm, inner sep=0pt] at (0,4) {};
 	\end{tikzpicture}
 	\end{center}
 	\end{column}
@@ -494,9 +491,9 @@
 		\begin{itemize}
 			\item State: $Z(t)=(n(t),x(t))$.
 			\item Arrows: speed $|r_n|$, here $p/c=2.5$.
-			\item<2-> Between jumps: $x$ moves \alert{deterministically}; $n$ is frozen.
-			\item<3-> Jumps change $n$ by $\pm 1$; $x$ is \alert{unchanged}.
-			\item<5-> The flow \alert{reaches the boundary} in finite time, and \alert{sticks} there.
+			\item Between jumps: $x$ moves \alert{deterministically}; $n$ is frozen.
+			\item Jumps change $n$ by $\pm 1$; $x$ is \alert{unchanged}.
+			\item The flow \alert{reaches the boundary} in finite time, and \alert{sticks} there.
 		\end{itemize}
 	\end{column}
 	\end{columns}
@@ -521,11 +518,9 @@
 	\end{myitem}
 
 	\vfill
-	\pause
 
 	\begin{myitem}
 		\item \alert{Atoms} of the stationary law at $(n,B)$, $n\leq\ns$.
-		\item \alert{Wasted refill rate}: $\displaystyle W = \sum_{n\le \ns} (p-nc)\,P(n=n,\ x=B)$.
 	\end{myitem}
 \end{frame}
 
@@ -538,11 +533,11 @@
 	\end{myitem}
 
 	\vfill
-	\pause
 
 	\begin{myitem}
 		\item \alert{Tokens are the unit of work}: a task is done when its $Y$ tokens have been burnt.
-		\item<3-> So the agents are \alert{slowed down}: they share the $p$ incoming tokens, each burning at rate $p/n<c$ instead of $c$.
+		\pause
+		\item So the agents are \alert{slowed down}: they share the $p$ incoming tokens, each burning at rate $p/n<c$ instead of $c$.
 	\end{myitem}
 \end{frame}
 
@@ -560,7 +555,6 @@
 	\end{block}
 
 	\vfill
-	\pause
 
 	\begin{myitem}[1em]
 		\item Activations continue at $(N-n)\lambda$; the quota stays at $0$ until $n$ drops to $\ns$.
@@ -585,7 +579,6 @@
 	\end{center}
 
 	\vfill
-	\pause
 
 	Only the empty bucket \alert{feeds back} on the fleet.
 \end{frame}
@@ -599,8 +592,8 @@
 			\item state-dependent jump rates $(N-n)\lambda$ and $m(n,x)$;
 			\item jumps that leave $x$ unchanged.
 		\end{itemize}
-		\item<2-> It sits slightly outside Davis's framework: \alert{compact} state space, and a flow that \alert{reaches} the boundary.
-		\item<2-> The construction is explicit, and the strong Markov property holds.
+		\item It sits slightly outside Davis's framework: \alert{compact} state space, and a flow that \alert{reaches} the boundary.
+		\item The construction is explicit, and the strong Markov property holds.
 	\end{myitem}
 \end{frame}
 
@@ -613,7 +606,6 @@
 	with the transport term switched off at the sticky boundaries.
 
 	\vfill
-	\pause
 
 	A stationary law $\pi$ satisfies $\displaystyle\int \mathcal{A}\psi\,d\pi = 0$ for all $\psi$ in the domain.
 \end{frame}
@@ -633,7 +625,6 @@
 	Think of probability mass moving along each line $n$ at speed $r_n$, and jumping between lines.
 
 	\vfill
-	\pause
 
 	In a thin slab $[x,x+dx]$ of line $n$, in equilibrium:
 	\begin{equation*}
@@ -643,7 +634,6 @@
 	\end{equation*}
 
 	\vfill
-	\pause
 
 	{\footnotesize Rigorously: these follow from $\int\mathcal A\psi\,d\pi=0$ for all $\psi$ in the domain of the extended generator, integrating the transport term by parts.}
 \end{frame}
@@ -653,24 +643,23 @@
 	Collect the densities in a \alert{column} vector $\mathbf f(x)=\big(f_0(x),\ldots,f_N(x)\big)^\top$, and let $R=\mathrm{diag}(r_n)$.
 
 	\vfill
-	\pause
 
 	\begin{myitem}
 		\item Jumps in minus jumps out, at mode $n$: $\ \sum_m f_m(x)\,Q_{mn} = \big(Q^\top\mathbf f(x)\big)_n$.
-		\item<3-> So the balance equations read
+		\pause
+		\item So the balance equations read
 	\end{myitem}
-	\uncover<3->{
 	\begin{block}{}
 		\begin{equation*}
 			R\,\mathbf f'(x) = Q^\top\,\mathbf f(x), \qquad x\in(0,B).
 		\end{equation*}
 	\end{block}
-	}
+	
 
 	\vfill
 	\begin{myitem}
-		\item<4-> A linear ODE system with constant coefficients: the \alert{forward} equation, hence $Q^\top$.
-		\item<4-> $R$ is \alert{indefinite}: some modes fill, some drain.
+		\item A linear ODE system with constant coefficients: the \alert{forward} equation, hence $Q^\top$.
+		\item $R$ is \alert{indefinite}: some modes fill, some drain.
 	\end{myitem}
 \end{frame}
 
@@ -718,7 +707,6 @@
 	\end{equation*}
 
 	\vfill
-	\pause
 
 	\begin{myitem}
 		\item $R$ is invertible ($p/c\notin\mathbb Z$): $N+1$ eigenpairs $(\theta_k,\phi_k)$, and
@@ -761,7 +749,6 @@
 	\end{block}
 
 	\vfill
-	\pause
 
 	\begin{myitem}
 		\item In equilibrium, the flow of probability from $n$ to $m$ equals the flow from $m$ to $n$, \alert{edge by edge}.
@@ -786,15 +773,15 @@
 	\end{center}
 
 	\vfill
-	\pause
 
 	\begin{myitem}
 		\item In equilibrium, the flow across any cut must balance.
-		\item<3-> Only \alert{one edge} crosses the cut between $\{0,\ldots,n\}$ and $\{n+1,\ldots,N\}$, so
+		\item Only \alert{one edge} crosses the cut between $\{0,\ldots,n\}$ and $\{n+1,\ldots,N\}$, so
 		\begin{equation*}
 			\pi_n\,(N-n)\lambda = \pi_{n+1}\,(n+1)\nu .
 		\end{equation*}
-		\item<4-> That is detailed balance; solving it gives the binomial law.
+		\pause
+		\item That is detailed balance; solving it gives the binomial law.
 	\end{myitem}
 \end{frame}
 
@@ -806,15 +793,14 @@
 	\end{equation*}
 
 	\vfill
-	\pause
 
 	\begin{myitem}
 		\item A real matrix $A$ is \alert{self-adjoint} in $\ell^2(\pi)$ if $\brackets{Au}{v}_\pi = \brackets{u}{Av}_\pi$ for all $u,v$.
-		\item<3-> In matrix form: $v^*\Pi A u = v^* A^\top\Pi u$ for all $u,v$, that is,
+		\item In matrix form: $v^*\Pi A u = v^* A^\top\Pi u$ for all $u,v$, that is,
 		\begin{equation*}
 			\Pi A = A^\top \Pi \qquad (\Pi A \text{ is symmetric}).
 		\end{equation*}
-		\item<4-> Example: any real diagonal matrix, such as $R$.
+		\item Example: any real diagonal matrix, such as $R$.
 	\end{myitem}
 \end{frame}
 
@@ -825,7 +811,6 @@
 	\end{theorem}
 
 	\vfill
-	\pause
 
 	Test on the basis vectors $e_n$, using $(Qe_m)_n = Q_{nm}$:
 	\begin{equation*}
@@ -833,7 +818,6 @@
 	\end{equation*}
 
 	\vfill
-	\pause
 
 	\begin{myitem}
 		\item[$\Rightarrow$] Self-adjointness on basis vectors is exactly \alert{detailed balance}.
@@ -841,9 +825,9 @@
 	\end{myitem}
 
 	\vfill
-	\uncover<4->{
+	
 	{\footnotesize In matrix form: detailed balance is $\Pi Q = Q^\top\Pi$.}
-	}
+	
 \end{frame}
 
 \begin{frame}{The Dirichlet form}
@@ -854,21 +838,21 @@
 	\end{equation*}
 
 	\vfill
-	\pause
 
 	\begin{myitem}
 		\item Equality iff $h$ is \alert{constant} on each communicating class: for the irreducible Engset chain, iff $h$ is constant.
-		\item<3-> So $Q$ is a \alert{self-adjoint, negative semidefinite} operator on $\ell^2(\pi)$: its spectrum is real and $\leq 0$, with the constants as the only zero mode.
+		\pause
+		\item So $Q$ is a \alert{self-adjoint, negative semidefinite} operator on $\ell^2(\pi)$: its spectrum is real and $\leq 0$, with the constants as the only zero mode.
 	\end{myitem}
 
 	\vfill
-	\uncover<4->{
+	\pause
 	\begin{block}{}
 		\begin{center}
 		Our problem is not $Qh=\theta h$ but the \alert{generalised} problem $\theta\,R\phi = Q^\top\phi$.
 		\end{center}
 	\end{block}
-	}
+	
 \end{frame}
 
 \begin{frame}{All the eigenvalues are real}
@@ -878,19 +862,18 @@
 	\end{theorem}
 
 	\vfill
-	\pause
 
 	\alert{Step 1.} Divide the eigenvector by the stationary law: $h_n := \phi_n/\pi_n$, i.e.\ $\phi = \Pi h$.
 	\begin{align*}
-		\uncover<3->{\theta\,R\,\Pi h &= Q^\top \Pi h\\}
-		\uncover<4->{\theta\,\Pi R\, h &= \Pi Q\, h && \text{($\Pi R=R\Pi$, diagonal; $Q^\top\Pi = \Pi Q$, detailed balance)}\\}
-		\uncover<5->{\theta\,R\,h &= Q\,h && \text{(cancel the invertible $\Pi$).}}
+		\theta\,R\,\Pi h &= Q^\top \Pi h\\
+		\theta\,\Pi R\, h &= \Pi Q\, h && \text{($\Pi R=R\Pi$, diagonal; $Q^\top\Pi = \Pi Q$, detailed balance)}\\
+		\theta\,R\,h &= Q\,h && \text{(cancel the invertible $\Pi$).}
 	\end{align*}
 
 	\vfill
-	\uncover<6->{
+	
 	{\footnotesize For $\theta=0$: $\phi=\pi$ and $h\equiv 1$.}
-	}
+	
 \end{frame}
 
 \begin{frame}{All the eigenvalues are real: proof}
@@ -905,8 +888,8 @@
 			\brackets{Qh}{h}_\pi = \theta\,\brackets{Rh}{h}_\pi .
 		\end{equation*}
 		Both brackets are \alert{real}, since $Q$ and $R$ are self-adjoint.
-		\item<2-> \alert{Step 3.} If $\brackets{Rh}{h}_\pi\neq 0$: $\quad\theta = \dfrac{\brackets{Qh}{h}_\pi}{\brackets{Rh}{h}_\pi}\in\R$.
-		\item<3-> \alert{Step 4.} If $\brackets{Rh}{h}_\pi= 0$: then $\brackets{Qh}{h}_\pi=0$, so by the Dirichlet form $h$ is constant and $Qh=0$. Thus $\theta\,Rh=0$ with $Rh\neq0$ ($R$ invertible), so $\theta=0$. \hfill $\square$
+		\item \alert{Step 3.} If $\brackets{Rh}{h}_\pi\neq 0$: $\quad\theta = \dfrac{\brackets{Qh}{h}_\pi}{\brackets{Rh}{h}_\pi}\in\R$.
+		\item \alert{Step 4.} If $\brackets{Rh}{h}_\pi= 0$: then $\brackets{Qh}{h}_\pi=0$, so by the Dirichlet form $h$ is constant and $Qh=0$. Thus $\theta\,Rh=0$ with $Rh\neq0$ ($R$ invertible), so $\theta=0$. \hfill $\square$
 	\end{myitem}
 
 	\vfill
@@ -921,9 +904,10 @@
 
 	\begin{myitem}
 		\item Each density $f_n(x)=\sum_k a_k\,\phi_{k,n}\,e^{\theta_k x}$ is a sum of $N+1$ \alert{real} exponentials.
-		\item<2-> A real spectrum \alert{helps}: no oscillating modes, and such a sum has at most $N$ zeros.
-		\item<3-> But it does \alert{not guarantee} positivity: exponents of both signs, coefficients of both signs, fixed by the boundary conditions.
-		\item<4-> Nor does counting conditions guarantee a \alert{non-singular} system: for the classical finite buffer, \cite{Mitra1988} proves neither.
+		\item A real spectrum \alert{helps}: no oscillating modes, and such a sum has at most $N$ zeros.
+		\pause
+		\item But it does \alert{not guarantee} positivity: exponents of both signs, coefficients of both signs, fixed by the boundary conditions.
+		\item Nor does counting conditions guarantee a \alert{non-singular} system: for the classical finite buffer, \cite{Mitra1988} proves neither.
 	\end{myitem}
 \end{frame}
 
@@ -935,7 +919,6 @@
 	\end{theorem}
 
 	\vfill
-	\pause
 
 	{\footnotesize Idea: only two atoms feed the interior, and positive boundary data give a positive interior. Flow conservation gives a positive left eigenvector of the resulting $2\times2$ transfer matrix, and Perron--Frobenius does the rest.}
 \end{frame}
@@ -980,31 +963,19 @@
 \section{Fluid limit}
 %=====================================================================
 
-\begin{frame}{Fluid scaling}
+\begin{frame}{Fluid scaling and the fluid ODE}
 
-	Scale the plan with the fleet:
-	\begin{equation*}
-		p = N\bar p, \qquad B = N\bar b .
-	\end{equation*}
+	Scale the plan with the fleet, $p = N\bar p$, $B = N\bar b$, and set $\bar n = n/N$ (fraction of agents active), $\bar x = x/N$ (tokens left, per agent).
 
 	\vfill
-	\pause
-
-	Fluid variables:
-	\begin{equation*}
-		\bar n(t) = \frac{n(t)}{N}\ \ \text{(fraction of agents active)}, \qquad \bar x(t) = \frac{x(t)}{N}\ \ \text{(tokens left, per agent)}.
-	\end{equation*}
-\end{frame}
-
-\begin{frame}{The fluid equations}
 
 	\begin{myitem}
 		\item \alert{Interior}, $0<\bar x<\bar b$:
 		\begin{equation*}
 			\dot{\bar n} = \lambda(1-\bar n) - \nu\,\bar n, \qquad \dot{\bar x} = \bar p - c\,\bar n .
 		\end{equation*}
-		\item<2-> \alert{Full bucket}, $\bar x=\bar b$ and $c\bar n<\bar p$: $\ \dot{\bar x}=0$, and $\bar n$ as in the interior.
-		\item<3-> \alert{Empty bucket}, $\bar x=0$ and $c\bar n>\bar p$: $\ \dot{\bar x}=0$, and the fleet is \alert{throttled}:
+		\item \alert{Full bucket}, $\bar x=\bar b$ and $c\bar n<\bar p$: $\ \dot{\bar x}=0$, and $\bar n$ as in the interior.
+		\item \alert{Empty bucket}, $\bar x=0$ and $c\bar n>\bar p$: $\ \dot{\bar x}=0$, and the fleet is \alert{throttled}:
 		\begin{equation*}
 			\dot{\bar n} = \lambda(1-\bar n) - \mu\,\bar p .
 		\end{equation*}
@@ -1023,8 +994,8 @@
 			\bar x(t) = \bar x_0 + (\bar p - c\rho)\,t - \frac{c}{\lambda+\nu}(\bar n_0-\rho)\big(1-e^{-(\lambda+\nu) t}\big),
 		\end{equation*}
 		until $\bar x$ hits $0$ or $\bar b$.
-		\item<2-> \alert{Full bucket}: $\bar x=\bar b$, and $\bar n$ as above, until $c\bar n$ rises above $\bar p$.
-		\item<3-> \alert{Empty bucket}: $\bar x=0$, and $\bar n$ relaxes at rate $\lambda$,
+		\item \alert{Full bucket}: $\bar x=\bar b$, and $\bar n$ as above, until $c\bar n$ rises above $\bar p$.
+		\item \alert{Empty bucket}: $\bar x=0$, and $\bar n$ relaxes at rate $\lambda$,
 		\begin{equation*}
 			\bar n(t) = \bar n_T + (\bar n_0-\bar n_T)\,e^{-\lambda t}, \qquad \bar n_T = 1-\frac{\mu\,\bar p}{\lambda},
 		\end{equation*}
@@ -1032,55 +1003,22 @@
 	\end{myitem}
 \end{frame}
 
-\begin{frame}{The empty bucket: sliding, not projecting}
-
-	\begin{myitem}
-		\item On the empty bucket the interior field points \alert{outward}: $\dot{\bar x} = \bar p - c\bar n < 0$.
-		\item<2-> \alert{Projecting} it onto the boundary, as for a reflected ODE, would keep $\dot{\bar n} = \lambda - (\lambda+\nu)\bar n$, with equilibrium $\rho$.
-		\item<3-> The throttle changes the $\bar n$ equation too:
-		\begin{equation*}
-			\dot{\bar n} = \lambda(1-\bar n) - \mu\bar p = \underbrace{\lambda-(\lambda+\nu)\bar n}_{\text{projection}} + \underbrace{\mu\,(c\bar n - \bar p)}_{>0} .
-		\end{equation*}
-		\item<4-> The extra term is the work that \alert{cannot be completed}: tasks stall, agents stay active.
-	\end{myitem}
-
-	\vfill
-	\uncover<5->{
-	\begin{block}{}
-		\begin{center}
-		The boundary dynamics come from the \alert{model}, not from the constraint.
-		\end{center}
-	\end{block}
-	}
-\end{frame}
-
-\begin{frame}{Convergence}{Work in progress}
+\begin{frame}{A law of large numbers}{Work in progress}
 
 	\begin{myitem}
 		\item Expected: $\big(n(t)/N,\ x(t)/N\big) \to \big(\bar n(t),\bar x(t)\big)$ on compact time intervals, as $N\to\infty$.
-		\item<2-> In the interior, a \alert{density-dependent} jump process \cite{Kurtz1970,EthierKurtz1986}.
-		\item<3-> At the boundaries the vector field is discontinuous: the limit \alert{slides} along them.
+		\item In the interior, a \alert{density-dependent} jump process \cite{Kurtz1970,EthierKurtz1986}.
+		\item At the boundaries the vector field is discontinuous: the limit \alert{slides} along them.
 	\end{myitem}
 
 	\vfill
-	\uncover<4->{
+	\pause
 	\begin{block}{}
 		No formal proof yet; it should follow from standard arguments for density-dependent processes in the Kurtz setting.
 	\end{block}
-	}
 \end{frame}
 
-\begin{frame}{The ODE as a law of large numbers}
-
-	\begin{center}
-		\input{figuras/fluid_lln.tex}
-	\end{center}
-
-	\vfill
-	{\footnotesize Under-provisioned plan, $\bar p=0.1723$, $\bar b=0.2$, from $(\bar n_0,\bar x_0)=(0.05,0.15)$; $\lambda=1$, $\nu=3$, $c=1$. One PDMP path for each $N$ (solid) against the fluid solution (dashed). Fluctuations are of order $1/\sqrt N$.}
-\end{frame}
-
-\begin{frame}{Phase portrait: over-provisioned}
+\begin{frame}{Over-provisioned: phase portrait}
 
 	\begin{columns}
 		\begin{column}{0.5\textwidth}
@@ -1090,8 +1028,10 @@
 		\end{column}
 		\begin{column}{0.5\textwidth}
 			\begin{myitem}[1em]
-				\item The fleet relaxes to $\rho$; the bucket \alert{fills}.
-				\item Equilibrium: bucket full, $\bar n=\rho$. No throttling.
+				\item The fleet relaxes to $\rho$, and $c\rho<\bar p$: the quota \alert{fills}.
+				\item Equilibrium $(\bar x,\bar n)=(\bar b,\rho)$: the bucket is full and the fleet is unaffected.
+				\pause
+				\item The system works with a \alert{full bucket}.
 			\end{myitem}
 			\vfill
 			{\footnotesize Green edge: full bucket. Red edge: empty bucket, fleet throttled. $\lambda=1$, $\nu=3$, $c=1$.}
@@ -1099,7 +1039,38 @@
 	\end{columns}
 \end{frame}
 
-\begin{frame}{Phase portrait: under-provisioned}
+\begin{frame}{Over-provisioned: the stochastic system}
+
+	\begin{center}
+		\input{figuras/fluid_lln_over.tex}
+	\end{center}
+
+	\vfill
+	{\footnotesize $\bar p=0.3613$, $\bar b=0.2$, from $(\bar n_0,\bar x_0)=(0.9,0.10)$; $\lambda=1$, $\nu=3$, $c=1$. One PDMP path for each $N$ (solid) against the fluid solution (dashed). Fluctuations are of order $1/\sqrt N$.}
+\end{frame}
+
+\begin{frame}{Under-provisioned: what to expect}
+
+	\begin{myitem}
+		\item Now $c\rho>\bar p$: the fleet burns more than the refill, and the bucket \alert{drains}.
+		\item On the empty bucket the interior field points outward. \alert{Projecting} it onto the boundary would keep $\dot{\bar n} = \lambda-(\lambda+\nu)\bar n$, with equilibrium $\rho$.
+		\item The throttle changes the $\bar n$ equation too:
+		\begin{equation*}
+			\dot{\bar n} = \lambda(1-\bar n) - \mu\bar p = \underbrace{\lambda-(\lambda+\nu)\bar n}_{\text{projection}} + \underbrace{\mu\,(c\bar n - \bar p)}_{\text{stalled work}\,>0} .
+		\end{equation*}
+	\end{myitem}
+
+	\pause
+
+	\begin{block}{}
+		\begin{center}
+		The flow \alert{slides} along the empty boundary to $\displaystyle \bar n_T = 1 - \frac{\mu\,\bar p}{\lambda} \;>\; \rho$: the fleet \alert{piles up}.
+		\end{center}
+	\end{block}
+	\vspace{-0.4em}{\footnotesize Consistent, $c\bar n_T>\bar p$, exactly when $\bar p<c\rho$. On the boundary the fleet relaxes at rate $\lambda$.}
+\end{frame}
+
+\begin{frame}{Under-provisioned: phase portrait}
 
 	\begin{columns}
 		\begin{column}{0.5\textwidth}
@@ -1109,9 +1080,10 @@
 		\end{column}
 		\begin{column}{0.5\textwidth}
 			\begin{myitem}[1em]
-				\item The bucket \alert{drains} and the fleet is throttled.
-				\item The flow \alert{slides} along the empty boundary\ldots
-				\item \ldots to an equilibrium $\bar n_T$ \alert{above} $\rho$, with the bucket empty.
+				\item The bucket drains; the flow hits the empty boundary and \alert{slides} along it.
+				\item Equilibrium $(\bar x,\bar n)=(0,\bar n_T)$, with $\bar n_T$ \alert{above} $\rho$.
+				\pause
+				\item The system works \alert{throttled}.
 			\end{myitem}
 			\vfill
 			{\footnotesize Green edge: full bucket. Red edge: empty bucket, fleet throttled. $\lambda=1$, $\nu=3$, $c=1$.}
@@ -1119,25 +1091,14 @@
 	\end{columns}
 \end{frame}
 
-\begin{frame}{Under-provisioning: the fleet piles up}
+\begin{frame}{Under-provisioned: the stochastic system}
 
-	\begin{block}{}
-		\begin{center}
-		The flow slides along the empty boundary to an equilibrium that sits \alert{above} $\rho$:
-		\begin{equation*}
-			\bar n_T = 1 - \frac{\mu\,\bar p}{\lambda} \;>\; \rho .
-		\end{equation*}
-		\end{center}
-	\end{block}
+	\begin{center}
+		\input{figuras/fluid_lln.tex}
+	\end{center}
 
 	\vfill
-	\pause
-
-	\begin{myitem}[1em]
-		\item It stays throttled, $c\bar n_T>\bar p$, exactly when $\bar p<c\rho$.
-		\item<3-> Stalled tasks keep \alert{more agents busy} at once.
-		\item<4-> The fleet relaxes at rate $\lambda$ instead of $\lambda+\nu$.
-	\end{myitem}
+	{\footnotesize $\bar p=0.1723$, $\bar b=0.2$, from $(\bar n_0,\bar x_0)=(0.05,0.15)$; $\lambda=1$, $\nu=3$, $c=1$. One PDMP path for each $N$ (solid) against the fluid solution (dashed).}
 \end{frame}
 
 \begin{frame}{What the fluid limit tells us}
@@ -1147,7 +1108,6 @@
 	\end{block}
 
 	\vfill
-	\pause
 
 	\begin{block}{2. Full or throttled}
 		\begin{itemize}
@@ -1157,9 +1117,7 @@
 	\end{block}
 
 	\vfill
-	\uncover<3->{
 	{\small Balanced, $\bar p=c\rho$: every level $\bar x\in[0,\bar b]$ is an equilibrium. The fluid scale cannot decide; the fluctuations do.}
-	}
 \end{frame}
 
 %=====================================================================
@@ -1171,13 +1129,14 @@
 	\begin{columns}
 		\begin{column}{0.45\textwidth}
 			\begin{myitem}[0.9em]
-				\item Refill a margin above the mean burn, on the scale of the fleet fluctuations:
+				\item Refill a margin above the mean burn:
 				\begin{gather*}
 					p = cN\rho + \beta\,c\,\sN,\\
 					\sN = \sqrt{N\rho(1-\rho)} .
 				\end{gather*}
-				\item<2-> \alert{Claim:} a quota of order $\sqrt N$, $B = b\,c\,\sN$, keeps throttling at a \alert{fixed positive level}, as in square-root staffing \cite{HalfinWhitt1981}.
-				\item<3-> Under study: the diffusion limit.
+				\pause
+				\item \alert{Claim:} a quota of order $\sqrt N$, $B = b\,c\,\sN$, keeps throttling at a \alert{fixed positive level}, as in square-root staffing \cite{HalfinWhitt1981}.
+				\item Under study: the diffusion limit.
 			\end{myitem}
 		\end{column}
 		\begin{column}{0.55\textwidth}
