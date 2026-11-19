@@ -286,7 +286,7 @@
 		\item A \alert{flow-level model} of a token quota shared by a fleet of on--off agents: a PDMP with state (active agents, tokens left).
 		\item The stationary equations are a linear ODE system, $R\,\mathbf f' = Q^\top\mathbf f$, whose eigenvalues are all \alert{real}: a proof from \alert{reversibility}.
 		\item The stationary law \alert{exists, is unique and positive}.
-		\item The \alert{fluid limit} is a piecewise-smooth ODE: the bucket ends full or empty, and under-provisioning makes the fleet \alert{pile up}.
+		\item A \alert{law of large numbers}: fleet and quota follow a piecewise-smooth ODE, and the system works either \alert{throttled} or with a \alert{full bucket}.
 		\item Ongoing work: a quota of order $\sqrt N$ should suffice.
 	\end{myitem}
 \end{frame}
@@ -980,29 +980,6 @@
 \section{Fluid limit}
 %=====================================================================
 
-\begin{frame}{The two costs}
-
-	\begin{columns}[T]
-		\begin{column}{0.5\textwidth}
-			\begin{block}{Throttling}
-				\begin{equation*}
-					P_{\rm thr} = \sum_{n>\ns} \pi^0_n
-				\end{equation*}
-				fraction of time the fleet is held to $p$.
-			\end{block}
-		\end{column}
-		\begin{column}{0.5\textwidth}
-			\begin{block}{Waste}
-				\begin{equation*}
-					W = \sum_{n\leq\ns} (p-nc)\,\pi^B_n
-				\end{equation*}
-				refill discarded at the cap.
-			\end{block}
-		\end{column}
-	\end{columns}
-
-\end{frame}
-
 \begin{frame}{Fluid scaling}
 
 	Scale the plan with the fleet:
@@ -1115,7 +1092,6 @@
 			\begin{myitem}[1em]
 				\item The fleet relaxes to $\rho$; the bucket \alert{fills}.
 				\item Equilibrium: bucket full, $\bar n=\rho$. No throttling.
-				\item Refill wasted at rate $N(\bar p - c\rho)$: of order $N$.
 			\end{myitem}
 			\vfill
 			{\footnotesize Green edge: full bucket. Red edge: empty bucket, fleet throttled. $\lambda=1$, $\nu=3$, $c=1$.}
@@ -1159,28 +1135,30 @@
 
 	\begin{myitem}[1em]
 		\item It stays throttled, $c\bar n_T>\bar p$, exactly when $\bar p<c\rho$.
-		\item<3-> All the refill is burnt, none is wasted.
-		\item<4-> Stalled tasks keep \alert{more agents busy} at once: tasks last $c\bar n_T/\bar p>1$ times longer.
-		\item<5-> The fleet relaxes at rate $\lambda$ instead of $\lambda+\nu$.
+		\item<3-> Stalled tasks keep \alert{more agents busy} at once.
+		\item<4-> The fleet relaxes at rate $\lambda$ instead of $\lambda+\nu$.
 	\end{myitem}
 \end{frame}
 
 \begin{frame}{What the fluid limit tells us}
 
-	\begin{myitem}
-		\item Over-provisioned: the bucket ends \alert{full}, waste of order $N$.
-		\item Under-provisioned: the bucket ends \alert{empty}, and the fleet piles up.
-		\item<2-> Balanced, $\bar p=c\rho$: at $\bar n=\rho$, $\dot{\bar x}=0$, so \alert{every} level $\bar x\in[0,\bar b]$ is an equilibrium.
-	\end{myitem}
+	\begin{block}{1. A law of large numbers}
+		Under the fluid scaling, $\big(n/N,\ x/N\big)$ follows a \alert{piecewise-smooth ODE}: linear relaxation of the fleet, the quota integrating $\bar p - c\bar n$, sticky boundaries, and a throttled fleet on the empty one.
+	\end{block}
+
+	\vfill
+	\pause
+
+	\begin{block}{2. Full or throttled}
+		\begin{itemize}
+			\item Over-provisioned, $\bar p>c\rho$: the system works with a \alert{full bucket}.
+			\item Under-provisioned, $\bar p<c\rho$: the system works \alert{throttled}, and the fleet piles up.
+		\end{itemize}
+	\end{block}
 
 	\vfill
 	\uncover<3->{
-	\begin{block}{}
-		\begin{center}
-		At the fluid scale the quota does not matter, and the balanced plan is \alert{degenerate}.\\
-		The fluctuations decide.
-		\end{center}
-	\end{block}
+	{\small Balanced, $\bar p=c\rho$: every level $\bar x\in[0,\bar b]$ is an equilibrium. The fluid scale cannot decide; the fluctuations do.}
 	}
 \end{frame}
 
@@ -1221,7 +1199,7 @@
 		\item The \alert{empty bucket throttles} the fleet: a feedback fluid queue.
 		\item Stationary equations $R\,\mathbf f'=Q^\top\mathbf f$: a \alert{real} spectrum, because reversible generators are self-adjoint in $\ell^2(\pi)$.
 		\item The stationary law exists, is unique and positive.
-		\item \alert{Fluid limit}: a piecewise-smooth ODE; full or empty, and under-provisioning piles up the fleet above $\rho$.
+		\item \alert{Law of large numbers}: a piecewise-smooth ODE. The system works either throttled, with the fleet piled up above $\rho$, or with a full bucket.
 		\item Ongoing: a quota of order $\sqrt N$ should suffice.
 	\end{myitem}
 \end{frame}
