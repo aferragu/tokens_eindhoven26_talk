@@ -575,39 +575,57 @@
 
 \begin{frame}{A piecewise-deterministic Markov process}
 
-	\begin{myitem}
-		\item $Z(t)=(n(t),x(t))$ is a PDMP \cite{Davis1984,Davis1993}:
-		\begin{itemize}
-			\item deterministic flow $\dot x = r_n$ between jumps;
-			\item state-dependent jump rates $(N-n)\lambda$ and $m(n,x)$;
-			\item jumps that leave $x$ unchanged.
-		\end{itemize}
+	\begin{myitem}[0.9em]
+		\item $Z(t)=(n(t),x(t))$ is a PDMP \cite{Davis1984,Davis1993}: deterministic flow $\dot x = r_n$ between jumps, state-dependent jump rates $(N-n)\lambda$ and $m(n,x)$, and jumps that leave $x$ unchanged.
 		\item It sits slightly outside Davis's framework: \alert{compact} state space, and a flow that \alert{reaches} the boundary.
-		\item The construction is explicit, and the strong Markov property holds.
+		\item The construction is explicit, and the strong Markov property holds, with \alert{extended generator}
+		{\small
+		\begin{equation*}
+			\mathcal{A}\psi(n,x) = r_n\,\partial_x\psi(n,x) + (N-n)\lambda\,[\psi(n{+}1,x)-\psi(n,x)] + m(n,x)\,[\psi(n{-}1,x)-\psi(n,x)]
+		\end{equation*}}
+		for $\psi(n,\cdot)$ absolutely continuous; the transport term is switched off at the sticky boundaries.
 	\end{myitem}
-\end{frame}
-
-\begin{frame}{Extended generator}
-
-	For $\psi(n,\cdot)$ absolutely continuous:
-	\begin{equation*}
-		\mathcal{A}\psi(n,x) = r_n\,\partial_x\psi(n,x) + (N-n)\lambda\,[\psi(n+1,x)-\psi(n,x)] + m(n,x)\,[\psi(n-1,x)-\psi(n,x)],
-	\end{equation*}
-	with the transport term switched off at the sticky boundaries.
-
-	\medskip
-
-	A stationary law $\pi$ satisfies $\displaystyle\int \mathcal{A}\psi\,d\pi = 0$ for all $\psi$ in the domain.
 \end{frame}
 
 \begin{frame}{The stationary measure}
 
-	We seek a \alert{mixed measure}:
-	\begin{myitem}
-		\item densities $f_n(x)$ on $(0,B)$, one for each mode $n$;
-		\item atoms $\pi^B_n$ at $x=B$ for the filling modes $n\le\ns$;
-		\item atoms $\pi^0_n$ at $x=0$ for the draining modes $n>\ns$.
-	\end{myitem}
+	\begin{columns}
+		\begin{column}{0.45\textwidth}
+			We seek a \alert{mixed measure} on $(n,x)$:
+			\begin{myitem}[1em]
+				\item \alert{densities} $f_n(x)$ on $(0,B)$, one for each mode $n$;
+				\item \alert{atoms} $\pi^B_n$ at $x=B$ for the filling modes $n\le\ns$;
+				\item \alert{atoms} $\pi^0_n$ at $x=0$ for the draining modes $n>\ns$.
+			\end{myitem}
+			\medskip
+			{\footnotesize The atoms sit where the flow sticks.}
+		\end{column}
+		\begin{column}{0.55\textwidth}
+			\begin{center}
+			\begin{tikzpicture}[scale=0.85]
+		\fill[azulcito!25] (0,0) -- plot[domain=0:5, samples=30] (\x,{0+0.05+(0.3-0.05)*(exp(0.5*\x)-1)/(exp(2.5)-1)}) -- (5,0) -- cycle;
+		\fill[azulcito!25] (0,1) -- plot[domain=0:5, samples=30] (\x,{1+0.07+(0.32-0.07)*(exp(0.5*\x)-1)/(exp(2.5)-1)}) -- (5,1) -- cycle;
+		\fill[azulcito!25] (0,2) -- plot[domain=0:5, samples=30] (\x,{2+0.09+(0.3-0.09)*(exp(0.5*\x)-1)/(exp(2.5)-1)}) -- (5,2) -- cycle;
+		\fill[azulcito!25] (0,3) -- plot[domain=0:5, samples=30] (\x,{3+0.3+(0.09-0.3)*(exp(0.5*\x)-1)/(exp(2.5)-1)}) -- (5,3) -- cycle;
+		\fill[azulcito!25] (0,4) -- plot[domain=0:5, samples=30] (\x,{4+0.28+(0.06-0.28)*(exp(0.5*\x)-1)/(exp(2.5)-1)}) -- (5,4) -- cycle;
+		\foreach \y in {0,1,2,3,4}{
+			\draw[gray!70] (0,\y) -- (5,\y);
+			\node[anchor=east, font=\footnotesize] at (-0.25,\y) {$n=\y$};
+		}
+		\node[anchor=east, font=\footnotesize] at (-0.25,4.6) {$\vdots$};
+		\draw[dashed] (0,-0.3) node[below] {$0$} -- (0,4.5);
+		\draw[dashed] (5,-0.3) node[below] {$B$} -- (5,4.5);
+		\draw[dotted, gray] (-0.1,2.5) -- (5.1,2.5);
+		\node[font=\scriptsize, gray, anchor=west] at (5.15,2.5) {$\ns=2$};
+		\foreach \y/\r in {0/3.2pt, 1/2.6pt, 2/2.0pt}{ \fill[verdecito!80!black] (5,\y) circle (\r); }
+		\foreach \y/\r in {3/2.8pt, 4/2.0pt}{ \fill[rojito] (0,\y) circle (\r); }
+		\node[font=\scriptsize, azulcito, anchor=south] at (2.5,4.45) {densities $f_n(x)$};
+		\node[font=\scriptsize, verdecito!60!black, anchor=north] at (5,-0.75) {atoms $\pi^B_n$};
+		\node[font=\scriptsize, rojito, anchor=north] at (0,-0.75) {atoms $\pi^0_n$};
+			\end{tikzpicture}
+			\end{center}
+		\end{column}
+	\end{columns}
 \end{frame}
 
 \begin{frame}{Balance equations, intuitively}
@@ -653,34 +671,91 @@
 	\end{myitem}
 \end{frame}
 
-\begin{frame}{Boundary conditions}
+\begin{frame}{Boundary conditions at $x=B$}
 
-	Mass reaching a boundary \alert{sticks} there; it leaks back into the interior through a single \alert{gateway}.
-
-	\medskip
-
-	\begin{columns}[T]
-		\begin{column}{0.5\textwidth}
-			\alert{At $x=B$:}
-			\begin{itemize}
-				\item draining modes enter only through the \alert{gateway} $\ns\to\ns+1$:
+	\begin{columns}
+		\begin{column}{0.47\textwidth}
+			\begin{myitem}[0.8em]
+				\item Filling modes $n\le\ns$ reach $B$ and \alert{stick}: atoms $\pi^B_n$, fed by the flux $r_n f_n(B^-)$.
+				\item The atoms exchange mass by \alert{Engset jumps} among $\{0,\ldots,\ns\}$.
+				\item Mass returns to the interior only through the \alert{gateway} $\ns\to\ns+1$:
 				\begin{equation*}
 					|r_{\ns+1}|\,f_{\ns+1}(B^-) = (N-\ns)\lambda\,\pi^B_{\ns},
 				\end{equation*}
-				and $f_n(B^-)=0$ for $n>\ns+1$;
-				\item atoms: Engset balance on $\{0,\ldots,\ns\}$, fed by the interior.
-			\end{itemize}
+				and $f_n(B^-)=0$ for $n>\ns+1$.
+			\end{myitem}
 		\end{column}
-		\begin{column}{0.5\textwidth}
-			\alert{At $x=0$:}
-			\begin{itemize}
-				\item filling modes enter only through the \alert{gateway} $\ns+1\to\ns$:
+		\begin{column}{0.53\textwidth}
+			\begin{center}
+			\begin{tikzpicture}[scale=0.85]
+		\fill[azulcito!10] (0,0) -- plot[domain=0:5, samples=30] (\x,{0+0.05+(0.3-0.05)*(exp(0.5*\x)-1)/(exp(2.5)-1)}) -- (5,0) -- cycle;
+		\fill[azulcito!10] (0,1) -- plot[domain=0:5, samples=30] (\x,{1+0.07+(0.32-0.07)*(exp(0.5*\x)-1)/(exp(2.5)-1)}) -- (5,1) -- cycle;
+		\fill[azulcito!10] (0,2) -- plot[domain=0:5, samples=30] (\x,{2+0.09+(0.3-0.09)*(exp(0.5*\x)-1)/(exp(2.5)-1)}) -- (5,2) -- cycle;
+		\fill[azulcito!10] (0,3) -- plot[domain=0:5, samples=30] (\x,{3+0.3+(0.09-0.3)*(exp(0.5*\x)-1)/(exp(2.5)-1)}) -- (5,3) -- cycle;
+		\fill[azulcito!10] (0,4) -- plot[domain=0:5, samples=30] (\x,{4+0.28+(0.06-0.28)*(exp(0.5*\x)-1)/(exp(2.5)-1)}) -- (5,4) -- cycle;
+		\foreach \y in {0,1,2,3,4}{
+			\draw[gray!70] (0,\y) -- (5,\y);
+			\node[anchor=east, font=\footnotesize] at (-0.25,\y) {$n=\y$};
+		}
+		\node[anchor=east, font=\footnotesize] at (-0.25,4.6) {$\vdots$};
+		\draw[dashed] (0,-0.3) node[below] {$0$} -- (0,4.5);
+		\draw[dashed] (5,-0.3) node[below] {$B$} -- (5,4.5);
+		\draw[dotted, gray] (-0.1,2.5) -- (5.1,2.5);
+		\node[font=\scriptsize, gray, anchor=east] at (-0.25,2.5) {$\ns=2$};
+		\foreach \y/\r in {0/3.2pt, 1/2.6pt, 2/2.0pt}{ \fill[verdecito!80!black] (5,\y) circle (\r); }
+		\foreach \y in {0,1,2}{ \draw[->, very thick, verdecito!80!black] (3.7,\y+0.15) -- (4.75,\y+0.15); }
+		\draw[<->, thick, verdecito!60!black] (5.3,0.1) -- (5.3,0.9);
+		\draw[<->, thick, verdecito!60!black] (5.3,1.1) -- (5.3,1.9);
+		\node[font=\scriptsize, verdecito!60!black, anchor=west] at (5.35,1) {Engset};
+		\draw[->, very thick, azulcito] (5.12,2.1) to[bend right=50] node[pos=0.5, right, font=\scriptsize] {$(N{-}\ns)\lambda$} (5.12,2.9);
+		\draw[->, very thick, azulcito] (4.9,3.15) -- (3.6,3.15) node[pos=0.5, above, font=\scriptsize] {gateway};
+		\node[font=\scriptsize, gray, anchor=east] at (4.95,4.2) {$f_4(B^-)=0$};
+			\end{tikzpicture}
+			\end{center}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Boundary conditions at $x=0$}
+
+	\begin{columns}
+		\begin{column}{0.47\textwidth}
+			\begin{myitem}[0.8em]
+				\item Draining modes $n>\ns$ reach $0$ and \alert{stick}: atoms $\pi^0_n$, fed by the flux $|r_n| f_n(0^+)$.
+				\item The atoms exchange mass by \alert{throttled} jumps: births $(N-n)\lambda$, deaths $\mu p$.
+				\item Mass returns to the interior only through the \alert{gateway} $\ns+1\to\ns$:
 				\begin{equation*}
 					r_{\ns}\,f_{\ns}(0^+) = \mu p\;\pi^0_{\ns+1},
 				\end{equation*}
-				and $f_n(0^+)=0$ for $n<\ns$;
-				\item atoms: \alert{throttled} balance on $\{\ns+1,\ldots,N\}$, deaths at rate $\mu p$.
-			\end{itemize}
+				and $f_n(0^+)=0$ for $n<\ns$.
+			\end{myitem}
+		\end{column}
+		\begin{column}{0.53\textwidth}
+			\begin{center}
+			\begin{tikzpicture}[scale=0.85]
+		\fill[azulcito!10] (0,0) -- plot[domain=0:5, samples=30] (\x,{0+0.05+(0.3-0.05)*(exp(0.5*\x)-1)/(exp(2.5)-1)}) -- (5,0) -- cycle;
+		\fill[azulcito!10] (0,1) -- plot[domain=0:5, samples=30] (\x,{1+0.07+(0.32-0.07)*(exp(0.5*\x)-1)/(exp(2.5)-1)}) -- (5,1) -- cycle;
+		\fill[azulcito!10] (0,2) -- plot[domain=0:5, samples=30] (\x,{2+0.09+(0.3-0.09)*(exp(0.5*\x)-1)/(exp(2.5)-1)}) -- (5,2) -- cycle;
+		\fill[azulcito!10] (0,3) -- plot[domain=0:5, samples=30] (\x,{3+0.3+(0.09-0.3)*(exp(0.5*\x)-1)/(exp(2.5)-1)}) -- (5,3) -- cycle;
+		\fill[azulcito!10] (0,4) -- plot[domain=0:5, samples=30] (\x,{4+0.28+(0.06-0.28)*(exp(0.5*\x)-1)/(exp(2.5)-1)}) -- (5,4) -- cycle;
+		\foreach \y in {0,1,2,3,4}{
+			\draw[gray!70] (0,\y) -- (5,\y);
+			\node[anchor=west, font=\footnotesize] at (5.25,\y) {$n=\y$};
+		}
+		\node[anchor=west, font=\footnotesize] at (5.25,4.6) {$\vdots$};
+		\draw[dashed] (0,-0.3) node[below] {$0$} -- (0,4.5);
+		\draw[dashed] (5,-0.3) node[below] {$B$} -- (5,4.5);
+		\draw[dotted, gray] (-0.1,2.5) -- (5.1,2.5);
+		\node[font=\scriptsize, gray, anchor=west] at (5.25,2.5) {$\ns=2$};
+		\foreach \y/\r in {3/2.8pt, 4/2.0pt}{ \fill[rojito] (0,\y) circle (\r); }
+		\foreach \y in {3,4}{ \draw[->, very thick, rojito] (1.3,\y+0.15) -- (0.25,\y+0.15); }
+		\draw[<->, thick, rojito] (-0.3,3.1) -- (-0.3,3.9);
+		\node[font=\scriptsize, rojito, anchor=east] at (-0.35,3.5) {throttled};
+		\draw[->, very thick, azulcito] (-0.12,2.9) to[bend right=50] node[pos=0.5, left, font=\scriptsize] {$\mu p$} (-0.12,2.1);
+		\draw[->, very thick, azulcito] (0.1,1.85) -- (1.4,1.85) node[pos=0.5, below, font=\scriptsize] {gateway};
+		\node[font=\scriptsize, gray, anchor=west] at (0.05,0.8) {$f_0(0^+)=f_1(0^+)=0$};
+			\end{tikzpicture}
+			\end{center}
 		\end{column}
 	\end{columns}
 \end{frame}
