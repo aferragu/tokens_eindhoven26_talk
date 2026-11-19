@@ -167,7 +167,7 @@
 		\end{center}
 	\end{block}
 
-	\vfill
+	\medskip
 
 	\begin{myitem}
 		\item Buying too little: agents are \alert{throttled} and tasks stall.
@@ -180,7 +180,7 @@
 
 	A provider wants to cap each client's \alert{long-run} usage, while still allowing \alert{bursts}.
 
-	\vfill
+	\medskip
 
 	The standard mechanism gives the client \alert{credits}:
 	\begin{myitem}[0.7em]
@@ -193,7 +193,7 @@
 
 	{\small Examples: LLM APIs (tokens per minute), cloud burst credits, network traffic.}
 
-	\vfill
+	\medskip
 	\pause
 
 	\begin{block}{}
@@ -209,7 +209,7 @@
 		\begin{column}{0.46\textwidth}
 			\begin{myitem}[0.6em]
 				\item Tokens drip into a bucket at rate $p$, up to a depth $B$.
-				\item Traffic leaves only by \alert{spending tokens}: bursts up to $B$ pass at once, the long-run rate is $p$.
+				\item Traffic leaves only by \alert{spending tokens}, at most at the \alert{link rate} $c>p$: bursts of up to $B$ tokens go out at rate $c$; the long-run rate is $p$.
 				\item Empty: traffic waits (\alert{shaping}) or is dropped (\alert{policing}).
 				\item Full: new tokens are discarded.
 			\end{myitem}
@@ -237,7 +237,7 @@
 				}
 				\draw[->, thick] (2.5,0) -- (gate.west);
 				\draw[->, very thick, azulcito] (gate.east) -- (5.4,0);
-				\node[azulcito, below] at (4.85,-0.1) {shaped};
+				\node[azulcito, below] at (4.75,-0.1) {rate $\le c$};
 			\end{tikzpicture}
 			\end{center}
 		\end{column}
@@ -257,7 +257,7 @@
 		\item Sources whose rates depend on the buffer: \alert{feedback fluid queues} \cite{MMS2003}.
 	\end{myitem}
 
-	\vfill
+	\medskip
 	\pause
 	\begin{block}{}
 		\begin{center}
@@ -300,7 +300,7 @@
 		\item An active agent \alert{burns} tokens at rate $c$ (tokens per unit time).
 	\end{myitem}
 
-	\vfill
+	\medskip
 
 	\begin{center}
 	\begin{tikzpicture}
@@ -328,7 +328,7 @@
 		\item Memoryless demands: the state of an agent is just \alert{idle/active}.
 	\end{myitem}
 
-	\vfill
+	\medskip
 	\pause
 
 	\begin{block}{Notation}
@@ -342,7 +342,7 @@
 
 	$N$ agents, independent \alert{as long as tokens remain}. Let $n(t)$ = number of active agents.
 
-	\vfill
+	\medskip
 
 	\begin{center}
 	\begin{tikzpicture}[->, >=stealth, node distance=2.1cm, every state/.style={minimum size=0.9cm, fill=azulcito!15!white, draw=azulcito, thick}]
@@ -365,7 +365,7 @@
 	\end{tikzpicture}
 	\end{center}
 
-	\vfill
+	\medskip
 
 	The finite-source birth--death chain of \cite{Engset1918}, with generator $Q$.
 
@@ -382,7 +382,7 @@
 		\item Mean burn rate of the fleet: $c\nb$.
 	\end{myitem}
 
-	\vfill
+	\medskip
 	\pause
 
 	\begin{block}{Reversibility \cite{Kelly1979}}
@@ -443,7 +443,7 @@
 		\item Standing assumptions: $0<p<Nc$, and $p/c\notin\mathbb{Z}$, so that no mode has zero drift.
 	\end{myitem}
 
-	\vfill
+	\medskip
 	\pause
 	\begin{block}{Mean drift $p - c\nb$}
 		The plan is \alert{over-provisioned} if $p>c\nb$, \alert{under-provisioned} if $p<c\nb$.
@@ -515,11 +515,6 @@
 		\item If $x=B$ and $n\leq \ns$, the refill would push the quota above its cap: the excess is \alert{discarded}.
 		\item The quota \alert{sticks} at $B$; the agents are \alert{unaffected}.
 		\item It leaves $B$ when the fleet crosses to $n=\ns+1$.
-	\end{myitem}
-
-	\vfill
-
-	\begin{myitem}
 		\item \alert{Atoms} of the stationary law at $(n,B)$, $n\leq\ns$.
 	\end{myitem}
 \end{frame}
@@ -530,11 +525,6 @@
 		\item If $x=0$ and $n>\ns$, the agents want $nc$ tokens per unit time, but only $p$ arrive.
 		\item The quota \alert{sticks} at $0$: every incoming token is spent at once.
 		\item It leaves $0$ when the fleet drops to $n=\ns$.
-	\end{myitem}
-
-	\vfill
-
-	\begin{myitem}
 		\item \alert{Tokens are the unit of work}: a task is done when its $Y$ tokens have been burnt.
 		\pause
 		\item So the agents are \alert{slowed down}: they share the $p$ incoming tokens, each burning at rate $p/n<c$ instead of $c$.
@@ -545,7 +535,7 @@
 
 	Each throttled agent burns at rate $p/n$, so it completes its task at rate $\mu p/n$.
 
-	\vfill
+	\medskip
 	\pause
 
 	\begin{block}{Completion rate of the fleet}
@@ -554,7 +544,7 @@
 		\end{equation*}
 	\end{block}
 
-	\vfill
+	\medskip
 
 	\begin{myitem}[1em]
 		\item Activations continue at $(N-n)\lambda$; the quota stays at $0$ until $n$ drops to $\ns$.
@@ -578,7 +568,7 @@
 	\end{tabular}
 	\end{center}
 
-	\vfill
+	\medskip
 
 	Only the empty bucket \alert{feeds back} on the fleet.
 \end{frame}
@@ -605,7 +595,7 @@
 	\end{equation*}
 	with the transport term switched off at the sticky boundaries.
 
-	\vfill
+	\medskip
 
 	A stationary law $\pi$ satisfies $\displaystyle\int \mathcal{A}\psi\,d\pi = 0$ for all $\psi$ in the domain.
 \end{frame}
@@ -624,7 +614,7 @@
 
 	Think of probability mass moving along each line $n$ at speed $r_n$, and jumping between lines.
 
-	\vfill
+	\medskip
 
 	In a thin slab $[x,x+dx]$ of line $n$, in equilibrium:
 	\begin{equation*}
@@ -642,7 +632,7 @@
 
 	Collect the densities in a \alert{column} vector $\mathbf f(x)=\big(f_0(x),\ldots,f_N(x)\big)^\top$, and let $R=\mathrm{diag}(r_n)$.
 
-	\vfill
+	\medskip
 
 	\begin{myitem}
 		\item Jumps in minus jumps out, at mode $n$: $\ \sum_m f_m(x)\,Q_{mn} = \big(Q^\top\mathbf f(x)\big)_n$.
@@ -656,7 +646,7 @@
 	\end{block}
 	
 
-	\vfill
+	\medskip
 	\begin{myitem}
 		\item A linear ODE system with constant coefficients: the \alert{forward} equation, hence $Q^\top$.
 		\item $R$ is \alert{indefinite}: some modes fill, some drain.
@@ -706,7 +696,7 @@
 		\theta\,R\,\phi = Q^\top\phi .
 	\end{equation*}
 
-	\vfill
+	\medskip
 
 	\begin{myitem}
 		\item $R$ is invertible ($p/c\notin\mathbb Z$): $N+1$ eigenpairs $(\theta_k,\phi_k)$, and
@@ -724,7 +714,7 @@
 		\item There are as many conditions as unknowns.
 	\end{myitem}
 
-	\vfill
+	\medskip
 	\pause
 
 	\begin{block}{}
@@ -739,7 +729,7 @@
 
 	A stationary Markov chain is \alert{reversible} if, run backwards in time, it has the same law.
 
-	\vfill
+	\medskip
 	\pause
 
 	\begin{block}{Detailed balance}
@@ -748,7 +738,7 @@
 		\end{equation*}
 	\end{block}
 
-	\vfill
+	\medskip
 
 	\begin{myitem}
 		\item In equilibrium, the flow of probability from $n$ to $m$ equals the flow from $m$ to $n$, \alert{edge by edge}.
@@ -772,7 +762,7 @@
 	\end{tikzpicture}
 	\end{center}
 
-	\vfill
+	\medskip
 
 	\begin{myitem}
 		\item In equilibrium, the flow across any cut must balance.
@@ -792,7 +782,7 @@
 		\brackets{u}{v}_\pi := \sum_n \pi_n\, u_n\, \bar v_n = v^*\,\Pi\,u, \qquad \Pi=\mathrm{diag}(\pi_n),\ \pi_n>0 .
 	\end{equation*}
 
-	\vfill
+	\medskip
 
 	\begin{myitem}
 		\item A real matrix $A$ is \alert{self-adjoint} in $\ell^2(\pi)$ if $\brackets{Au}{v}_\pi = \brackets{u}{Av}_\pi$ for all $u,v$.
@@ -810,14 +800,14 @@
 		$Q$ is self-adjoint in $\ell^2(\pi)$ if and only if the chain is reversible.
 	\end{theorem}
 
-	\vfill
+	\medskip
 
 	Test on the basis vectors $e_n$, using $(Qe_m)_n = Q_{nm}$:
 	\begin{equation*}
 		\brackets{Qe_m}{e_n}_\pi = \pi_n\,Q_{nm}, \qquad \brackets{e_m}{Qe_n}_\pi = \pi_m\,Q_{mn} .
 	\end{equation*}
 
-	\vfill
+	\medskip
 
 	\begin{myitem}
 		\item[$\Rightarrow$] Self-adjointness on basis vectors is exactly \alert{detailed balance}.
@@ -837,7 +827,7 @@
 		\brackets{Qh}{h}_\pi = -\frac12\sum_{m\neq n}\pi_n Q_{nm}\,|h_n-h_m|^2 \;\leq\; 0 .
 	\end{equation*}
 
-	\vfill
+	\medskip
 
 	\begin{myitem}
 		\item Equality iff $h$ is \alert{constant} on each communicating class: for the irreducible Engset chain, iff $h$ is constant.
@@ -845,7 +835,7 @@
 		\item So $Q$ is a \alert{self-adjoint, negative semidefinite} operator on $\ell^2(\pi)$: its spectrum is real and $\leq 0$, with the constants as the only zero mode.
 	\end{myitem}
 
-	\vfill
+	\medskip
 	\pause
 	\begin{block}{}
 		\begin{center}
@@ -861,7 +851,7 @@
 		Every eigenvalue $\theta$ of $\theta\,R\,\phi = Q^\top\phi$ is real.
 	\end{theorem}
 
-	\vfill
+	\medskip
 
 	\alert{Step 1.} Divide the eigenvector by the stationary law: $h_n := \phi_n/\pi_n$, i.e.\ $\phi = \Pi h$.
 	\begin{align*}
@@ -880,7 +870,7 @@
 
 	Let $Qh=\theta Rh$, with $h\neq 0$ possibly complex.
 
-	\vfill
+	\medskip
 
 	\begin{myitem}
 		\item \alert{Step 2.} Take the inner product with $h$:
@@ -934,7 +924,7 @@
 		\end{column}
 	\end{columns}
 
-	\vfill
+	\medskip
 	\begin{myitem}[0.5em]
 		\item The quota is often \alert{full}, rarely empty; the fleet is close to its binomial law.
 	\end{myitem}
@@ -952,7 +942,7 @@
 		\end{column}
 	\end{columns}
 
-	\vfill
+	\medskip
 	\begin{myitem}[0.5em]
 		\item The quota is \alert{empty} more than half the time, and the fleet \alert{piles up} above $N\rho$.
 	\end{myitem}
@@ -967,7 +957,7 @@
 
 	Scale the plan with the fleet, $p = N\bar p$, $B = N\bar b$, and set $\bar n = n/N$ (fraction of agents active), $\bar x = x/N$ (tokens left, per agent).
 
-	\vfill
+	\medskip
 
 	\begin{myitem}
 		\item \alert{Interior}, $0<\bar x<\bar b$:
@@ -985,22 +975,14 @@
 
 \begin{frame}{Explicit solutions}
 
-	A piecewise-smooth system: explicit on each piece, glued at the hitting times.
-
-	\begin{myitem}
-		\item \alert{Interior}, from $(\bar n_0,\bar x_0)$:
-		\begin{equation*}
-			\bar n(t) = \rho + (\bar n_0-\rho)\,e^{-(\lambda+\nu) t}, \qquad
-			\bar x(t) = \bar x_0 + (\bar p - c\rho)\,t - \frac{c}{\lambda+\nu}(\bar n_0-\rho)\big(1-e^{-(\lambda+\nu) t}\big),
-		\end{equation*}
-		until $\bar x$ hits $0$ or $\bar b$.
-		\item \alert{Full bucket}: $\bar x=\bar b$, and $\bar n$ as above, until $c\bar n$ rises above $\bar p$.
-		\item \alert{Empty bucket}: $\bar x=0$, and $\bar n$ relaxes at rate $\lambda$,
-		\begin{equation*}
-			\bar n(t) = \bar n_T + (\bar n_0-\bar n_T)\,e^{-\lambda t}, \qquad \bar n_T = 1-\frac{\mu\,\bar p}{\lambda},
-		\end{equation*}
-		until $c\bar n$ drops below $\bar p$.
+	On each piece the ODE is linear, and solvable in closed form:
+	\begin{myitem}[0.8em]
+		\item interior and full bucket: $\ \bar n(t) = \rho + (\bar n_0-\rho)\,e^{-(\lambda+\nu) t}$, and $\bar x$ integrates $\bar p - c\bar n$;
+		\item empty bucket: $\ \bar n(t) = \bar n_T + (\bar n_0-\bar n_T)\,e^{-\lambda t}$, with $\bar n_T = 1-\mu\bar p/\lambda$.
 	\end{myitem}
+
+	\medskip
+	The pieces are glued at the times the flow hits a boundary, or crosses $c\bar n=\bar p$.
 \end{frame}
 
 \begin{frame}{A law of large numbers}{Work in progress}
@@ -1011,7 +993,7 @@
 		\item At the boundaries the vector field is discontinuous: the limit \alert{slides} along them.
 	\end{myitem}
 
-	\vfill
+	\medskip
 	\pause
 	\begin{block}{}
 		No formal proof yet; it should follow from standard arguments for density-dependent processes in the Kurtz setting.
@@ -1021,12 +1003,12 @@
 \begin{frame}{Over-provisioned: phase portrait}
 
 	\begin{columns}
-		\begin{column}{0.5\textwidth}
+		\begin{column}{0.6\textwidth}
 			\begin{center}
 			\input{figuras/phase_over.tex}
 			\end{center}
 		\end{column}
-		\begin{column}{0.5\textwidth}
+		\begin{column}{0.4\textwidth}
 			\begin{myitem}[1em]
 				\item The fleet relaxes to $\rho$, and $c\rho<\bar p$: the quota \alert{fills}.
 				\item Equilibrium $(\bar x,\bar n)=(\bar b,\rho)$: the bucket is full and the fleet is unaffected.
@@ -1073,12 +1055,12 @@
 \begin{frame}{Under-provisioned: phase portrait}
 
 	\begin{columns}
-		\begin{column}{0.5\textwidth}
+		\begin{column}{0.6\textwidth}
 			\begin{center}
 			\input{figuras/phase_under.tex}
 			\end{center}
 		\end{column}
-		\begin{column}{0.5\textwidth}
+		\begin{column}{0.4\textwidth}
 			\begin{myitem}[1em]
 				\item The bucket drains; the flow hits the empty boundary and \alert{slides} along it.
 				\item Equilibrium $(\bar x,\bar n)=(0,\bar n_T)$, with $\bar n_T$ \alert{above} $\rho$.
@@ -1107,7 +1089,7 @@
 		Under the fluid scaling, $\big(n/N,\ x/N\big)$ follows a \alert{piecewise-smooth ODE}: linear relaxation of the fleet, the quota integrating $\bar p - c\bar n$, sticky boundaries, and a throttled fleet on the empty one.
 	\end{block}
 
-	\vfill
+	\medskip
 
 	\begin{block}{2. Full or throttled}
 		\begin{itemize}
