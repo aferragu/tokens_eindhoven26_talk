@@ -553,26 +553,6 @@
 	\end{myitem}
 \end{frame}
 
-\begin{frame}{The two boundaries, side by side}
-
-	\begin{center}
-	\renewcommand{\arraystretch}{1.5}
-	\begin{tabular}{l|l|l}
-		& \alert{full bucket}, $x=B$ & \alert{empty bucket}, $x=0$\\\hline
-		modes & filling, $n\le\ns$ & draining, $n>\ns$\\
-		quota & sticks at $B$ & sticks at $0$\\
-		refill & excess \alert{wasted} & all of it \alert{spent}\\
-		agents & unaffected: burn at $c$ & \alert{slowed}: burn at $p/n<c$\\
-		completions & $n\nu$ & $\mu p$\\
-		leaves when & $n$ rises to $\ns+1$ & $n$ drops to $\ns$
-	\end{tabular}
-	\end{center}
-
-	\medskip
-
-	Only the empty bucket \alert{feeds back} on the fleet.
-\end{frame}
-
 \begin{frame}{A piecewise-deterministic Markov process}
 
 	\begin{myitem}[0.9em]
@@ -598,7 +578,7 @@
 				\item \alert{atoms} $\pi^0_n$ at $x=0$ for the draining modes $n>\ns$.
 			\end{myitem}
 			\medskip
-			{\footnotesize The atoms sit where the flow sticks.}
+			{\footnotesize The atoms sit where the flow sticks. Stationary laws of PDMPs: \cite{Costa1990}.}
 		\end{column}
 		\begin{column}{0.55\textwidth}
 			\begin{center}
